@@ -1,3 +1,5 @@
+@file:Suppress("NonExhaustiveWhenStatementMigration")
+
 package org.prozach.echbt.android.ble
 
 import android.bluetooth.BluetoothDevice
@@ -319,6 +321,7 @@ object ConnectionManager {
             is MtuRequest -> with(operation) {
                 gatt.requestMtu(mtu)
             }
+            else -> {}
         }
     }
 
@@ -429,7 +432,7 @@ object ConnectionManager {
             characteristic: BluetoothGattCharacteristic
         ) {
             with(characteristic) {
-                Timber.i("Characteristic $uuid changed | value: ${value.toHexString()}")
+                //Timber.i("Characteristic $uuid changed | value: ${value.toHexString()}")
                 listeners.forEach { it.get()?.onCharacteristicChanged?.invoke(gatt.device, this) }
             }
         }

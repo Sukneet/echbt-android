@@ -1,9 +1,9 @@
 package org.prozach.echbt.android
 
+import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
-import android.app.Service
 import android.bluetooth.BluetoothDevice
 import android.content.Context
 import android.content.Intent
@@ -12,20 +12,21 @@ import android.os.Build
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
-import kotlinx.android.synthetic.main.activity_ech_stats.stats_format_echelon
-import kotlinx.android.synthetic.main.activity_ech_stats.stats_format_peleton
-import org.jetbrains.anko.notificationManager
+import androidx.lifecycle.LifecycleService
 import org.prozach.echbt.android.ble.ConnectionEventListener
 import org.prozach.echbt.android.ble.ConnectionManager
 import org.prozach.echbt.android.ble.toHexString
 import java.util.Locale
 import java.util.UUID
 import kotlin.math.pow
+import kotlinx.coroutines.launch
+import androidx.lifecycle.lifecycleScope
+import timber.log.Timber
 
-class ECHStatsService : Service() {
+class ECHStatsService : LifecycleService() {
 
-    private val sensorUUID = java.util.UUID.fromString("0bf669f4-45f2-11e7-9598-0800200c9a66")
-    private val writeUUID = java.util.UUID.fromString("0bf669f2-45f2-11e7-9598-0800200c9a66")
+    private val sensorUUID = UUID.fromString("0bf669f4-45f2-11e7-9598-0800200c9a66")
+    private val writeUUID = UUID.fromString("0bf669f2-45f2-11e7-9598-0800200c9a66")
     private val CHANNEL_ID = "Echadence"
 
     // https://www.techotopia.com/index.php/Android_Local_Bound_Services_%E2%80%93_A_Kotlin_Example
@@ -46,33 +47,34 @@ class ECHStatsService : Service() {
     private var cadenceMax: UInt = 0u
     private var cadenceTotal: UInt = 0u
     private var powerMax: UInt = 0u
-    private var startTimeMillis: Long = 0;
-    private var elapsedTimeMillis: Long = 0;
+    private var startTimeMillis: Long = 0
+    private var elapsedTimeMillis: Long = 0
     private var statCount: UInt = 0u
-    private var statsFormat: StatsFormat = StatsFormat.PELOTON;
+    private var statsFormat: StatsFormat = StatsFormat.PELOTON
+
+    private val follow = FollowRide()
 
     enum class StatsFormat {
         ECHELON, PELOTON
     }
 
     fun setStatsFormat(sf: StatsFormat) {
-        var intent = Intent("com.prozach.echbt.android.stats");
         statsFormat = sf
-        powerMax = 0U;
+        powerMax = 0U
     }
 
     fun clearStats() {
-        resistanceMax = 0U;
-        resistanceTotal = 0U;
-        cadenceMax = 0U;
-        cadenceTotal = 0U;
-        powerMax = 0U;
-        statCount = 0U;
+        resistanceMax = 0U
+        resistanceTotal = 0U
+        cadenceMax = 0U
+        cadenceTotal = 0U
+        powerMax = 0U
+        statCount = 0U
     }
 
     fun clearTime() {
-        startTimeMillis = 0L;
-        elapsedTimeMillis = 0L;
+        startTimeMillis = 0L
+        elapsedTimeMillis = 0L
     }
 
     fun shutdown() {
@@ -83,10 +85,10 @@ class ECHStatsService : Service() {
     }
 
     fun floatingWindow(action: String) {
-        var intent = Intent("com.prozach.echbt.android.stats");
-        intent.putExtra("floating_ech_stats", action);
-        println("Sent:"+action);
-        sendBroadcast(intent);
+        val intent = Intent("com.prozach.echbt.android.stats")
+        intent.putExtra("floating_ech_stats", action)
+        Timber.i("Sent:$action")
+        sendBroadcast(intent)
     }
 
     // Helpers to start/stop
@@ -115,9 +117,10 @@ class ECHStatsService : Service() {
         }
     }
 
+    @SuppressLint("UnspecifiedImmutableFlag")
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        super.onStartCommand(intent, flags, startId);
-        println("onStartCommand")
+        super.onStartCommand(intent, flags, startId)
+        Timber.i("onStartCommand")
 
         // Create a notification to keep it running
         createNotificationChannel()
@@ -142,7 +145,7 @@ class ECHStatsService : Service() {
             when (characteristic.uuid) {
                 sensorUUID -> {
                     ConnectionManager.enableNotifications(device, characteristic)
-                    log("Enabling notifications from ${characteristic.uuid}")
+                    Timber.i("Enabling notifications from ${characteristic.uuid}")
                 }
                 writeUUID -> {
                     ConnectionManager.writeCharacteristic(
@@ -150,15 +153,44 @@ class ECHStatsService : Service() {
                         characteristic,
                         byteArrayOfInts(0xF0, 0xB0, 0x01, 0x01, 0xA2)
                     )
-                    log("Writing activation string to ${characteristic.uuid}")
+                    Timber.i("Writing activation string to ${characteristic.uuid}")
                 }
             }
         }
 
-        return START_NOT_STICKY;
+        lifecycleScope.launch{
+            startPeloton()
+        }
+        return START_NOT_STICKY
     }
 
-    override fun onBind(intent: Intent): IBinder? {
+    private suspend fun startPeloton() {
+        val username = "****"
+        val password = "****"
+        Timber.i("Creating Peloton")
+
+        lifecycleScope.launch {
+            val peloton = Peloton(username, password)
+
+            launch {
+                peloton.latestWorkout.collect { latestInstructorCues ->
+                    //follow.cues = latestInstructorCues
+                    Timber.i("New instructor cues")
+                    follow.update(latestInstructorCues)
+                }
+            }
+
+            launch {
+                follow.resistance.collect { resistance ->
+                    Timber.i("Setting New Resistance to $resistance")
+                    forceResistance(resistance)
+                }
+            }
+        }
+    }
+
+    override fun onBind(intent: Intent): IBinder {
+        super.onBind(intent)
         return binder
     }
 
@@ -168,13 +200,8 @@ class ECHStatsService : Service() {
         }
     }
 
-    override fun onCreate() {
-        println("onCreate")
-        super.onCreate()
-    }
-
     override fun onDestroy() {
-        println("onDestroy")
+        //println("onDestroy")
         ConnectionManager.unregisterListener(connectionEventListener)
         ConnectionManager.teardownConnection(device)
         super.onDestroy()
@@ -183,24 +210,24 @@ class ECHStatsService : Service() {
     private val connectionEventListener by lazy {
         ConnectionEventListener().apply {
             onDisconnect = {
-                log("Disconnected")
+                Timber.i("Disconnected")
             }
 
             onCharacteristicRead = { _, characteristic ->
-                log("Read from ${characteristic.uuid}: ${characteristic.value.toHexString()}")
+                Timber.d("Read from ${characteristic.uuid}: ${characteristic.value.toHexString()}")
             }
 
             onCharacteristicWrite = { _, characteristic ->
-                log("Wrote to ${characteristic.uuid}")
+                Timber.d("Wrote to ${characteristic.uuid}")
             }
 
             onCharacteristicChanged = { _, characteristic ->
-                when (characteristic.value[1].toByte()) {
+                when (characteristic.value[1]) {
                     0xD1.toByte() -> {
-                        var cadenceTemp =
+                        val cadenceTemp =
                             characteristic.value[9].toUInt()
                                 .shl(8) + characteristic.value[10].toUInt()
-                        log("Cadence ${cadenceVal}")
+                        //log("Cadence ${cadenceVal}")
 
                         // Validate the value before using it
                         if(cadenceTemp < 300U) {
@@ -210,60 +237,49 @@ class ECHStatsService : Service() {
                     }
                     0xD2.toByte() -> {
                         resistanceVal = characteristic.value[3].toUInt()
-                        log("Resistance ${resistanceVal}")
+                        Timber.i("Resistance $resistanceVal")
                         sendLocalBroadcast()
                     }
                     else -> {
-                        log("Value changed on ${characteristic.uuid}: ${characteristic.value.toHexString()}")
+                        Timber.i("Value changed on ${characteristic.uuid}: ${characteristic.value.toHexString()}")
                     }
                 }
-                if(cadenceVal > 0.toUInt()) {
+
+                //if(cadenceVal > 0.toUInt()) {
                     statCount++
                     cadenceTotal += cadenceVal
                     resistanceTotal += resistanceVal
 
                     // We just started pedaling
                     if(startTimeMillis == 0L) {
-                        startTimeMillis = System.currentTimeMillis();
+                        startTimeMillis = System.currentTimeMillis()
                     }
+                /*
                 } else {
                     // We stopped pedaling, stop the clock
                     if(startTimeMillis > 0) {
-                        elapsedTimeMillis = System.currentTimeMillis() - startTimeMillis;
-                        startTimeMillis = 0;
+                        elapsedTimeMillis = System.currentTimeMillis() - startTimeMillis
+                        startTimeMillis = 0
                     }
                 }
+                */
             }
 
             onNotificationsEnabled = { _, characteristic ->
-                log("Enabled notifications on ${characteristic.uuid}")
+                Timber.i("Enabled notifications on ${characteristic.uuid}")
                 notifyingCharacteristics.add(characteristic.uuid)
             }
 
             onNotificationsDisabled = { _, characteristic ->
-                log("Disabled notifications on ${characteristic.uuid}")
+                Timber.i("Disabled notifications on ${characteristic.uuid}")
                 notifyingCharacteristics.remove(characteristic.uuid)
             }
         }
     }
 
-    private fun log(message: String) {
-        println(message)
-//            val formattedMessage = String.format("%s: %s", dateFormatter.format(Date()), message)
-//            runOnUiThread {
-//                val currentLogText = if (log_text_view.text.isEmpty()) {
-//                    "Beginning of log."
-//                } else {
-//                    log_text_view.text
-//                }
-//                log_text_view.text = "$currentLogText\n$formattedMessage"
-//                log_scroll_view.post { log_scroll_view.fullScroll(View.FOCUS_DOWN) }
-//            }
-    }
-
     private fun sendLocalBroadcast() {
 
-        var intent = Intent("com.prozach.echbt.android.stats");
+        val intent = Intent("com.prozach.echbt.android.stats")
 
         if(cadenceVal > cadenceMax) {
             cadenceMax = cadenceVal
@@ -273,69 +289,97 @@ class ECHStatsService : Service() {
         }
 
         // Cadence
-        intent.putExtra("cadence", cadenceVal.toString());
-        intent.putExtra("cadence_max", cadenceMax.toString());
+        intent.putExtra("cadence", cadenceVal.toString())
+        intent.putExtra("cadence_max", cadenceMax.toString())
         if(statCount > 0.toUInt()) {
-            intent.putExtra("cadence_avg", (cadenceTotal / statCount).toUInt().toString());
+            intent.putExtra("cadence_avg", (cadenceTotal / statCount).toString())
         } else {
-            intent.putExtra("cadence_avg", 0.toString());
+            intent.putExtra("cadence_avg", 0.toString())
         }
 
         // Resistance
-        intent.putExtra("resistance", calcResistance(resistanceVal).toString());
+        intent.putExtra("resistance", calcResistance(resistanceVal).toString())
         if(statCount > 0.toUInt()) {
-            intent.putExtra("resistance_avg", calcResistance(resistanceTotal / statCount).toString());
+            intent.putExtra("resistance_avg", calcResistance(resistanceTotal / statCount).toString())
         } else {
-            intent.putExtra("resistance_avg", calcResistance(resistanceVal).toString());
+            intent.putExtra("resistance_avg", calcResistance(resistanceVal).toString())
         }
-        intent.putExtra("resistance_max", calcResistance(resistanceMax).toString());
+        intent.putExtra("resistance_max", calcResistance(resistanceMax).toString())
 
 
-        var currentElapsedTimeMillis = elapsedTimeMillis;
+        val currentElapsedTimeMillis = System.currentTimeMillis() - follow.startTimeMillis
+        /*
+        var currentElapsedTimeMillis = elapsedTimeMillis
         if(startTimeMillis > 0) {
-            currentElapsedTimeMillis += System.currentTimeMillis() - startTimeMillis;
+            currentElapsedTimeMillis += System.currentTimeMillis() - follow.startTimeMillis
         }
+         */
         val minutes = currentElapsedTimeMillis / 1000 / 60
         val seconds = currentElapsedTimeMillis / 1000 % 60
-        intent.putExtra("time", minutes.toString()+":"+seconds.toString().padStart(2, '0'));
+        intent.putExtra("time", minutes.toString()+":"+seconds.toString().padStart(2, '0'))
 
         // Power
-        var power = calcPower(cadenceVal, resistanceVal)
+        val power = calcPower(cadenceVal, resistanceVal)
         if(power > powerMax) {
             powerMax = power
         }
-        intent.putExtra("power", power.toString());
+        intent.putExtra("power", power.toString())
 
-        var avgPower = 0U;
+        var avgPower = 0U
         if(statCount > 0.toUInt()) {
-            avgPower = calcPower(cadenceTotal / statCount, resistanceTotal / statCount);
+            avgPower = calcPower(cadenceTotal / statCount, resistanceTotal / statCount)
         }
-        intent.putExtra("power_avg", avgPower.toString());
-        intent.putExtra("power_max", powerMax.toString());
-        var kcal = ((avgPower.toFloat() / 0.24) * (currentElapsedTimeMillis.toFloat()/1000.0))/1000.0;
-        intent.putExtra("kcal", kcal.toUInt().toString());
+        intent.putExtra("power_avg", avgPower.toString())
+        intent.putExtra("power_max", powerMax.toString())
+        val kcal = ((avgPower.toFloat() / 0.24) * (currentElapsedTimeMillis.toFloat()/1000.0))/1000.0
+        intent.putExtra("kcal", kcal.toUInt().toString())
 
         if(statsFormat == StatsFormat.ECHELON) {
-            intent.putExtra("stats_format", "echelon");
+            intent.putExtra("stats_format", "echelon")
         } else if(statsFormat == StatsFormat.PELOTON) {
-            intent.putExtra("stats_format", "peloton");
+            intent.putExtra("stats_format", "peloton")
         }
 
         sendBroadcast(intent)
-        println("sendLocalBroadcast")
+        /* println("sendLocalBroadcast") */
+    }
+
+    fun forceResistance(requestResistance:UInt) {
+        val noOpData = byteArrayOfInts(0xF0, 0xB1, 0x01, 0x00, 0xA2)
+        noOpData[3] = requestResistance.toByte()
+        // OP4 is a checksum = SUM of all other OPs & 0xFF
+        noOpData[4] = (requestResistance + noOpData[4].toUInt()).toByte()
+
+        for (characteristic in characteristics) {
+            when (characteristic.uuid) {
+                writeUUID -> {
+                    ConnectionManager.writeCharacteristic(
+                        device,
+                        characteristic,
+                        noOpData
+                    )
+                }
+            }
+        }
     }
 
     private fun calcResistance(r: UInt): UInt {
-        when (statsFormat) {
+
+        val resistance: UInt = when (statsFormat) {
+            // https://www.desmos.com/calculator/jsf64byu6p
             StatsFormat.PELOTON -> {
-                return ((0.0116058 * r.toFloat()
-                    .pow(3)) + (-0.568562 * r.toFloat()
-                    .pow(2)) + (10.4126 * r.toFloat()) - 31.4807).toUInt()
+                ((((0.000363841 * r.toFloat().pow(3)) +
+                        (-0.0184465 * r.toFloat().pow(3)) +
+                        (0.284268 * r.toFloat().pow(2)) +
+                        (1.00338 * r.toFloat())) +
+                        -0.0607239)).toUInt()
             }
             StatsFormat.ECHELON -> {
-                return r
+                r
             }
         }
+
+        return resistance
     }
 
     private fun calcPower(c: UInt, r: UInt): UInt {
@@ -346,7 +390,7 @@ class ECHStatsService : Service() {
     }
 
     private fun String.hexToBytes() =
-        this.chunked(2).map { it.toUpperCase(Locale.US).toInt(16).toByte() }.toByteArray()
+        this.chunked(2).map { it.uppercase(Locale.US).toInt(16).toByte() }.toByteArray()
 
     private fun byteArrayOfInts(vararg ints: Int) =
         ByteArray(ints.size) { pos -> ints[pos].toByte() }

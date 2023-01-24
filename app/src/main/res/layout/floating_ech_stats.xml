@@ -1,62 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="400dp"
-    android:layout_height="300dp"
-    android:background="#CC000000"
-    >
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="1600dp"
+    android:layout_height="160dp"
+    android:background="@color/cardview_shadow_start_color"
+    android:visibility="visible"
+    tools:visibility="visible">
 
     <LinearLayout
         android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        >
+        android:minHeight="100sp"
+        android:orientation="vertical">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="#77000000"
             android:orientation="horizontal"
-            android:padding="5dp"
-            >
-
-            <TextView
-                android:id="@+id/title_float"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_horizontal"
-                android:text="@string/stats_header"
-                android:textAlignment="center"
-                android:textColor="@android:color/primary_text_dark"
-                android:textSize="24sp"
-                />
-
-        </LinearLayout>
+            android:padding="5dp" />
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="80dp"
             android:orientation="horizontal"
-            android:padding="3dp"
-            >
-
-            <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/ic_cadence_float"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight=".25"
-                android:contentDescription="@string/cadence"
-                app:srcCompat="@mipmap/ic_cadence_red"
-                />
+            android:padding="3dp">
 
             <LinearLayout
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_weight=".2"
-                android:orientation="vertical"
-                >
+                android:gravity="bottom"
+                android:minWidth="50sp"
+                android:orientation="vertical">
 
                 <TextView
                     android:id="@+id/title_avg_cadence_float"
@@ -65,8 +43,7 @@
                     android:text="@string/avg"
                     android:textAlignment="center"
                     android:textColor="@android:color/background_light"
-                    android:textSize="12sp"
-                    />
+                    android:textSize="12sp" />
 
                 <TextView
                     android:id="@+id/avg_cadence_float"
@@ -74,27 +51,40 @@
                     android:layout_height="wrap_content"
                     android:textAlignment="center"
                     android:textColor="@android:color/background_light"
-                    android:textSize="20sp"
-                    />
+                    android:textSize="20sp" />
 
             </LinearLayout>
 
-            <TextView
-                android:id="@+id/cadence_float"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight=".35"
-                android:textAlignment="center"
-                android:textColor="@android:color/background_light"
-                android:textSize="30sp"
-                />
-
             <LinearLayout
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_weight=".2"
-                android:orientation="vertical"
-                >
+                android:gravity="top"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/title_Cadence"
+                    style="@style/Main_title"
+                    android:text="@string/cadence" />
+
+                <TextView
+                    android:id="@+id/cadence_float"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minWidth="100sp"
+                    android:textAlignment="center"
+                    android:textColor="@android:color/background_light"
+                    android:textSize="60sp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight=".2"
+                android:gravity="bottom"
+                android:minWidth="50sp"
+                android:orientation="vertical">
 
                 <TextView
                     android:id="@+id/title_max_cadence_float"
@@ -103,8 +93,7 @@
                     android:text="@string/max"
                     android:textAlignment="center"
                     android:textColor="@android:color/background_light"
-                    android:textSize="12sp"
-                    />
+                    android:textSize="12sp" />
 
                 <TextView
                     android:id="@+id/max_cadence_float"
@@ -112,34 +101,16 @@
                     android:layout_height="wrap_content"
                     android:textAlignment="center"
                     android:textColor="@android:color/background_light"
-                    android:textSize="20sp"
-                    />
+                    android:textSize="20sp" />
             </LinearLayout>
 
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="3dp"
-            >
-
-            <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/ic_resistance_float"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight=".25"
-                android:contentDescription="@string/resistance"
-                app:srcCompat="@mipmap/ic_resistance2"
-                />
-
             <LinearLayout
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_weight=".2"
-                android:orientation="vertical"
-                >
+                android:gravity="bottom"
+                android:minWidth="50sp"
+                android:orientation="vertical">
 
                 <TextView
                     android:id="@+id/title_avg_resistance_float"
@@ -148,8 +119,7 @@
                     android:text="@string/avg"
                     android:textAlignment="center"
                     android:textColor="@android:color/background_light"
-                    android:textSize="12sp"
-                    />
+                    android:textSize="12sp" />
 
                 <TextView
                     android:id="@+id/avg_resistance_float"
@@ -157,27 +127,41 @@
                     android:layout_height="wrap_content"
                     android:textAlignment="center"
                     android:textColor="@android:color/background_light"
-                    android:textSize="20sp"
-                    />
+                    android:textSize="20sp" />
 
             </LinearLayout>
 
-            <TextView
-                android:id="@+id/resistance_float"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight=".35"
-                android:textAlignment="center"
-                android:textColor="@android:color/background_light"
-                android:textSize="30sp"
-                />
-
             <LinearLayout
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_weight=".2"
-                android:orientation="vertical"
-                >
+                android:gravity="top"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/title_Resistance"
+                    style="@style/Main_title"
+                    android:layout_width="match_parent"
+                    android:text="@string/resistance" />
+
+                <TextView
+                    android:id="@+id/resistance_float"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minWidth="100sp"
+                    android:textAlignment="center"
+                    android:textColor="@android:color/background_light"
+                    android:textSize="60sp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight=".2"
+                android:gravity="bottom"
+                android:minWidth="50sp"
+                android:orientation="vertical">
 
                 <TextView
                     android:id="@+id/title_max_resistance_float"
@@ -186,8 +170,7 @@
                     android:text="@string/max"
                     android:textAlignment="center"
                     android:textColor="@android:color/background_light"
-                    android:textSize="12sp"
-                    />
+                    android:textSize="12sp" />
 
                 <TextView
                     android:id="@+id/max_resistance_float"
@@ -195,35 +178,17 @@
                     android:layout_height="wrap_content"
                     android:textAlignment="center"
                     android:textColor="@android:color/background_light"
-                    android:textSize="20sp"
-                    />
+                    android:textSize="20sp" />
 
             </LinearLayout>
 
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="3dp"
-            >
-
-            <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/ic_power_float"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight=".25"
-                android:contentDescription="@string/power"
-                app:srcCompat="@mipmap/ic_power2"
-                />
-
             <LinearLayout
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_weight=".2"
-                android:orientation="vertical"
-                >
+                android:gravity="bottom"
+                android:minWidth="50sp"
+                android:orientation="vertical">
 
                 <TextView
                     android:id="@+id/title_avg_power_float"
@@ -232,8 +197,7 @@
                     android:text="@string/avg"
                     android:textAlignment="center"
                     android:textColor="@android:color/background_light"
-                    android:textSize="12sp"
-                    />
+                    android:textSize="12sp" />
 
                 <TextView
                     android:id="@+id/avg_power_float"
@@ -241,28 +205,40 @@
                     android:layout_height="wrap_content"
                     android:textAlignment="center"
                     android:textColor="@android:color/background_light"
-                    android:textSize="20sp"
-                    />
+                    android:textSize="20sp" />
 
             </LinearLayout>
 
-            <TextView
-                android:id="@+id/power_float"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight=".35"
-                android:contentDescription="@string/power"
-                android:textAlignment="center"
-                android:textColor="@android:color/background_light"
-                android:textSize="30sp"
-                />
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="top"
+                android:layout_weight="0.2"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/title_Power"
+                    style="@style/Main_title"
+                    android:layout_width="match_parent"
+                    android:text="@string/power" />
+
+                <TextView
+                    android:id="@+id/power_float"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minWidth="100sp"
+                    android:textAlignment="center"
+                    android:textColor="@android:color/background_light"
+                    android:textSize="60sp" />
+            </LinearLayout>
 
             <LinearLayout
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_weight=".2"
-                android:orientation="vertical"
-                >
+                android:gravity="bottom"
+                android:minWidth="50sp"
+                android:orientation="vertical">
 
                 <TextView
                     android:id="@+id/title_max_power_float"
@@ -271,8 +247,7 @@
                     android:text="@string/max"
                     android:textAlignment="center"
                     android:textColor="@android:color/background_light"
-                    android:textSize="12sp"
-                    />
+                    android:textSize="12sp" />
 
                 <TextView
                     android:id="@+id/max_power_float"
@@ -280,8 +255,7 @@
                     android:layout_height="wrap_content"
                     android:textAlignment="center"
                     android:textColor="@android:color/background_light"
-                    android:textSize="20sp"
-                    />
+                    android:textSize="20sp" />
 
             </LinearLayout>
 
@@ -291,8 +265,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:padding="3dp"
-            >
+            android:padding="3dp">
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/ic_time_float"
@@ -300,8 +273,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight=".25"
                 android:contentDescription="@string/time"
-                app:srcCompat="@mipmap/ic_time_white"
-                />
+                app:srcCompat="@mipmap/ic_time_white" />
 
             <TextView
                 android:id="@+id/time_float"
@@ -311,16 +283,7 @@
                 android:contentDescription="@string/power"
                 android:textAlignment="center"
                 android:textColor="@android:color/background_light"
-                android:textSize="30sp"
-                />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="3dp"
-            >
+                android:textSize="30sp" />
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/ic_kcal_float"
@@ -328,8 +291,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight=".25"
                 android:contentDescription="@string/kcal"
-                app:srcCompat="@mipmap/ic_kcal"
-                />
+                app:srcCompat="@mipmap/ic_kcal" />
 
             <TextView
                 android:id="@+id/kcal_float"
@@ -339,16 +301,7 @@
                 android:contentDescription="@string/kcal"
                 android:textAlignment="center"
                 android:textColor="@android:color/background_light"
-                android:textSize="30sp"
-                />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:orientation="horizontal"
-            android:padding="3dp"
-            >
+                android:textSize="30sp" />
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/ic_back_float"
@@ -356,8 +309,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight=".33"
                 android:contentDescription="@string/kcal"
-                app:srcCompat="@mipmap/ic_back"
-                />
+                app:srcCompat="@mipmap/ic_back" />
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/ic_reset_time"
@@ -365,8 +317,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight=".33"
                 android:contentDescription="@string/kcal"
-                app:srcCompat="@mipmap/ic_reset_time"
-                />
+                app:srcCompat="@mipmap/ic_reset_time" />
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/ic_reset_stats"
@@ -374,8 +325,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight=".33"
                 android:contentDescription="@string/kcal"
-                app:srcCompat="@mipmap/ic_reset_stats"
-                />
+                app:srcCompat="@mipmap/ic_reset_stats" />
 
         </LinearLayout>
 

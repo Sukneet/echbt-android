@@ -32,10 +32,10 @@ import kotlinx.android.synthetic.main.activity_ech_stats.kcal
 import kotlinx.android.synthetic.main.activity_ech_stats.pip_help
 import kotlinx.android.synthetic.main.activity_ech_stats.reset_stats
 import kotlinx.android.synthetic.main.activity_ech_stats.reset_time
-import kotlinx.android.synthetic.main.activity_ech_stats.stats_format
 import kotlinx.android.synthetic.main.activity_ech_stats.stats_format_echelon
 import kotlinx.android.synthetic.main.activity_ech_stats.stats_format_peleton
 import kotlinx.android.synthetic.main.activity_ech_stats.time
+import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -57,25 +57,25 @@ class ECHStatsActivity : AppCompatActivity() {
     var isBound = false
     private val ECHStatsServiceConnection = object : ServiceConnection {
         override fun onServiceConnected(className: ComponentName, service: IBinder) {
-            println("Activity Connected")
+            Timber.d("Activity Connected")
             val binder = service as ECHStatsService.ECHStatsBinder
             statsService = binder.getService()
-            statsService?.floatingWindow("dismiss");
+            statsService?.floatingWindow("dismiss")
             isBound = true
         }
 
         override fun onServiceDisconnected(name: ComponentName) {
-            println("Activity Disconnected")
+            Timber.d("Activity Disconnected")
             isBound = false
         }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        println("ONCREATE")
+        //println("ONCREATE")
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_ech_stats)
 
-        var intent = Intent(this, ECHStatsService::class.java)
+        val intent = Intent(this, ECHStatsService::class.java)
         bindService(intent, ECHStatsServiceConnection, BIND_AUTO_CREATE)
 
         val filter = IntentFilter()
@@ -108,15 +108,19 @@ class ECHStatsActivity : AppCompatActivity() {
 
         ic_reset_stats.setOnClickListener{
             statsService?.clearStats()
+            statsService?.forceResistance(32u)
         }
         reset_stats.setOnClickListener{
             statsService?.clearStats()
+            statsService?.forceResistance(32u)
         }
         ic_reset_time.setOnClickListener{
             statsService?.clearStats()
+            statsService?.forceResistance(1u)
         }
         reset_time.setOnClickListener{
             statsService?.clearTime()
+            statsService?.forceResistance(1u)
         }
         stats_format_echelon.setOnClickListener{
             statsService?.setStatsFormat(ECHStatsService.StatsFormat.ECHELON)
@@ -128,7 +132,7 @@ class ECHStatsActivity : AppCompatActivity() {
 
     private val broadcastHandler: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
-            println("onReceive")
+            //println("onReceive")
             runOnUiThread {
                 cadence.text = intent.getStringExtra("cadence")
                 cadence_avg.text = intent.getStringExtra("cadence_avg")
@@ -142,7 +146,7 @@ class ECHStatsActivity : AppCompatActivity() {
                 time.text = intent.getStringExtra("time")
                 kcal.text = intent.getStringExtra("kcal")
 
-                var statsFormat = intent.getStringExtra("stats_format")
+                val statsFormat = intent.getStringExtra("stats_format")
                 if(statsFormat != "") {
                     if(statsFormat == "echelon" && !stats_format_echelon.isChecked) {
                         stats_format_echelon.isChecked = true
@@ -195,8 +199,8 @@ class ECHStatsActivity : AppCompatActivity() {
         when (requestCode) {
             REQUEST_CODE_DRAW_OVERLAY_PERMISSION -> {
                 if (canDrawOverlays) {
-                    ECHStatsFloating.show();
-                    floatingWindowShown = true;
+                    ECHStatsFloating.show()
+                    floatingWindowShown = true
                     finish()
                     // Return to home screen
                     val startMain = Intent(Intent.ACTION_MAIN)
@@ -225,10 +229,8 @@ class ECHStatsActivity : AppCompatActivity() {
     private fun log(message: String) {
         val formattedMessage = String.format("%s: %s", dateFormatter.format(Date()), message)
         runOnUiThread {
-            val currentLogText = if (log_text_view.text.isEmpty()) {
+            val currentLogText = log_text_view.text.ifEmpty {
                 "Beginning of log."
-            } else {
-                log_text_view.text
             }
             log_text_view.text = "$currentLogText\n$formattedMessage"
             log_scroll_view.post { log_scroll_view.fullScroll(View.FOCUS_DOWN) }

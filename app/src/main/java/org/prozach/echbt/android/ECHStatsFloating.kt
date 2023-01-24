@@ -28,7 +28,7 @@ import kotlinx.android.synthetic.main.floating_ech_stats.view.max_cadence_float
 import kotlinx.android.synthetic.main.floating_ech_stats.view.max_power_float
 import kotlinx.android.synthetic.main.floating_ech_stats.view.max_resistance_float
 import kotlinx.android.synthetic.main.floating_ech_stats.view.time_float
-import kotlinx.android.synthetic.main.floating_ech_stats.view.title_float
+import timber.log.Timber
 
 class ECHStatsFloating constructor(private val context: Context) {
 
@@ -46,13 +46,13 @@ class ECHStatsFloating constructor(private val context: Context) {
     var statsService: ECHStatsService? = null
     private val ECHStatsServiceConnection = object : ServiceConnection {
         override fun onServiceConnected(className: ComponentName, service: IBinder) {
-            println("Floating Window Connected To Service")
+            Timber.i("Floating Window Connected To Service")
             val binder = service as ECHStatsService.ECHStatsBinder
             statsService = binder.getService()
         }
 
         override fun onServiceDisconnected(name: ComponentName) {
-            println("Floating Window Disconnected From Service")
+            Timber.i("Floating Window Disconnected From Service")
         }
     }
 
@@ -141,7 +141,7 @@ class ECHStatsFloating constructor(private val context: Context) {
     }
 
     fun show() {
-        println("show")
+        Timber.i("show")
         if (context.canDrawOverlays) {
             dismiss()
             isShowing = true
@@ -164,10 +164,10 @@ class ECHStatsFloating constructor(private val context: Context) {
 
     private val broadcastHandler: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
-            println("onReceive")
+            //println("onReceive")
             var floating_ech_stats = intent.getStringExtra("floating_ech_stats")
-            println("Got:"+floating_ech_stats);
             if(floating_ech_stats == "dismiss") {
+                Timber.d("Got:"+floating_ech_stats);
                 dismiss();
                 return;
             }

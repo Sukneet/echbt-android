@@ -544,6 +544,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:buttonTint="@color/colorAccent"
+                    android:minHeight="48dp"
                     android:text="@string/echelon"
                     android:textColor="?android:attr/colorForegroundInverse"
                     />
@@ -554,6 +555,7 @@
                     android:layout_height="wrap_content"
                     android:buttonTint="@color/colorAccent"
                     android:checked="true"
+                    android:minHeight="48dp"
                     android:text="@string/peloton"
                     android:textColor="?android:attr/colorForegroundInverse"
                     />
@@ -596,6 +598,27 @@
             android:orientation="vertical"
             android:visibility="invisible"
             >
+
+            <EditText
+                android:id="@+id/Peloton_user"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:hint="username"
+                android:inputType="textPersonName|textAutoComplete"
+                android:text="User"
+                android:autofillHints=""
+                />
+
+            <EditText
+                android:id="@+id/Peloton_pass"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:hint="password"
+                android:inputType="textPassword|textAutoComplete|textWebPassword"
+                android:autofillHints=""
+                />
 
             <TextView
                 android:id="@+id/log_title"
