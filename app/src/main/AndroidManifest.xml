@@ -20,6 +20,11 @@
         android:required="true"
         />
 
+    <uses-feature
+        android:name="android.hardware.location.gps"
+        android:required="false"
+        />
+
     <application
         android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"

@@ -22,6 +22,7 @@ import kotlin.math.pow
 import kotlinx.coroutines.launch
 import androidx.lifecycle.lifecycleScope
 import timber.log.Timber
+import kotlin.math.roundToInt
 
 class ECHStatsService : LifecycleService() {
 
@@ -47,10 +48,12 @@ class ECHStatsService : LifecycleService() {
     private var cadenceMax: UInt = 0u
     private var cadenceTotal: UInt = 0u
     private var powerMax: UInt = 0u
-    private var startTimeMillis: Long = 0
-    private var elapsedTimeMillis: Long = 0
+    private var dist: Long = 0;
+    private var startTimeMillis: Long = 0;
+    private var elapsedTimeMillis: Long = 0;
     private var statCount: UInt = 0u
-    private var statsFormat: StatsFormat = StatsFormat.PELOTON
+    private var distFormat: DistFormat = DistFormat.MILES;
+    private var statsFormat: StatsFormat = StatsFormat.PELOTON;
 
     private val follow = FollowRide()
 
@@ -58,18 +61,28 @@ class ECHStatsService : LifecycleService() {
         ECHELON, PELOTON
     }
 
+    enum class DistFormat {
+        MILES, KILOMETERS
+    }
+
     fun setStatsFormat(sf: StatsFormat) {
         statsFormat = sf
         powerMax = 0U
     }
 
+    fun setDistFormat(df: DistFormat) {
+        var intent = Intent("com.prozach.echbt.android.stats");
+        distFormat = df
+    }
+
     fun clearStats() {
-        resistanceMax = 0U
-        resistanceTotal = 0U
-        cadenceMax = 0U
-        cadenceTotal = 0U
-        powerMax = 0U
-        statCount = 0U
+        resistanceMax = 0U;
+        resistanceTotal = 0U;
+        cadenceMax = 0U;
+        cadenceTotal = 0U;
+        powerMax = 0U;
+        statCount = 0U;
+        dist = 0L;
     }
 
     fun clearTime() {
@@ -289,12 +302,12 @@ class ECHStatsService : LifecycleService() {
         }
 
         // Cadence
-        intent.putExtra("cadence", cadenceVal.toString())
-        intent.putExtra("cadence_max", cadenceMax.toString())
+	intent.putExtra("cadence", cadenceVal.toString());
+        intent.putExtra("cadence_max", cadenceMax.toString());
+        var cadenceAverage = 0U;
         if(statCount > 0.toUInt()) {
-            intent.putExtra("cadence_avg", (cadenceTotal / statCount).toString())
-        } else {
-            intent.putExtra("cadence_avg", 0.toString())
+            cadenceAverage = (cadenceTotal / statCount).toUInt();
+            intent.putExtra("cadence_avg", cadenceAverage.toString());
         }
 
         // Resistance
@@ -338,6 +351,16 @@ class ECHStatsService : LifecycleService() {
             intent.putExtra("stats_format", "echelon")
         } else if(statsFormat == StatsFormat.PELOTON) {
             intent.putExtra("stats_format", "peloton")
+        }
+
+        // Cadence to kph https://github.com/cagnulein/qdomyos-zwift/issues/62
+        val distanceKilometers = (cadenceAverage.toFloat() * 0.37497622F) * (currentElapsedTimeMillis.toFloat()/3600000F);
+        if(distFormat == DistFormat.MILES) {
+            intent.putExtra("dist_format", "miles");
+            intent.putExtra("dist", ((distanceKilometers * 0.621371 * 100.0).roundToInt()/100.0).toString());
+        } else if(distFormat == DistFormat.KILOMETERS) {
+            intent.putExtra("dist_format", "kilometers");
+            intent.putExtra("dist", ((distanceKilometers * 100.0).roundToInt()/100.0).toString());
         }
 
         sendBroadcast(intent)
