@@ -258,5 +258,5 @@ class BleOperationsActivity : AppCompatActivity() {
     }
 
     private fun String.hexToBytes() =
-        this.chunked(2).map { it.toUpperCase(Locale.US).toInt(16).toByte() }.toByteArray()
+        this.chunked(2).map { it.uppercase(Locale.US).toInt(16).toByte() }.toByteArray()
 }
