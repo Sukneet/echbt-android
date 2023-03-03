@@ -1,35 +1,17 @@
 package org.prozach.echbt.android
 
-import android.content.BroadcastReceiver
-import android.content.ComponentName
-import android.content.Context
+import android.content.*
 import android.content.Context.WINDOW_SERVICE
-import android.content.Intent
-import android.content.IntentFilter
-import android.content.ServiceConnection
 import android.graphics.PixelFormat
 import android.os.Build
 import android.os.IBinder
 import android.view.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat.startActivity
-import kotlinx.android.synthetic.main.floating_ech_stats.view.avg_cadence_float
-import kotlinx.android.synthetic.main.floating_ech_stats.view.avg_power_float
-import kotlinx.android.synthetic.main.floating_ech_stats.view.avg_resistance_float
-import kotlin.math.abs
-import kotlinx.android.synthetic.main.floating_ech_stats.view.resistance_float
-import kotlinx.android.synthetic.main.floating_ech_stats.view.power_float
-import kotlinx.android.synthetic.main.floating_ech_stats.view.cadence_float
-import kotlinx.android.synthetic.main.floating_ech_stats.view.ic_back_float
-import kotlinx.android.synthetic.main.floating_ech_stats.view.ic_reset_stats
-import kotlinx.android.synthetic.main.floating_ech_stats.view.ic_reset_time
-import kotlinx.android.synthetic.main.floating_ech_stats.view.kcal_float
-import kotlinx.android.synthetic.main.floating_ech_stats.view.dist_float
-import kotlinx.android.synthetic.main.floating_ech_stats.view.max_cadence_float
-import kotlinx.android.synthetic.main.floating_ech_stats.view.max_power_float
-import kotlinx.android.synthetic.main.floating_ech_stats.view.max_resistance_float
-import kotlinx.android.synthetic.main.floating_ech_stats.view.time_float
+import kotlinx.android.synthetic.main.floating_ech_stats.view.*
 import timber.log.Timber
+import kotlin.math.abs
+
 
 class ECHStatsFloating constructor(private val context: Context) {
 
@@ -45,7 +27,7 @@ class ECHStatsFloating constructor(private val context: Context) {
     private lateinit var layoutParams: WindowManager.LayoutParams
 
     var statsService: ECHStatsService? = null
-    private val ECHStatsServiceConnection = object : ServiceConnection {
+    private val echStatsServiceConnection = object : ServiceConnection {
         override fun onServiceConnected(className: ComponentName, service: IBinder) {
             Timber.i("Floating Window Connected To Service")
             val binder = service as ECHStatsService.ECHStatsBinder
@@ -109,7 +91,7 @@ class ECHStatsFloating constructor(private val context: Context) {
         with(floatView) {
             ic_back_float.setOnClickListener {
                 val intent = Intent(context, ECHStatsActivity::class.java)
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
                 startActivity(context, intent, null)
                 dismiss()
             }
@@ -120,6 +102,24 @@ class ECHStatsFloating constructor(private val context: Context) {
 
             ic_reset_time.setOnClickListener {
                 statsService?.clearTime()
+            }
+
+            increase_time.setOnClickListener {
+                statsService?.increaseTime(1)
+            }
+
+            increase_time.setOnLongClickListener {
+                statsService?.increaseTime(60)
+                false
+            }
+
+            decrease_time.setOnClickListener {
+                statsService?.decreaseTime(1)
+            }
+
+            decrease_time.setOnLongClickListener {
+                statsService?.decreaseTime(60)
+                false
             }
         }
 
@@ -152,7 +152,7 @@ class ECHStatsFloating constructor(private val context: Context) {
             context.registerReceiver(broadcastHandler, filter)
         }
         val intent = Intent(context, ECHStatsService::class.java)
-        context.bindService(intent, ECHStatsServiceConnection, AppCompatActivity.BIND_AUTO_CREATE)
+        context.bindService(intent, echStatsServiceConnection, AppCompatActivity.BIND_AUTO_CREATE)
     }
 
     fun dismiss() {
@@ -166,11 +166,11 @@ class ECHStatsFloating constructor(private val context: Context) {
     private val broadcastHandler: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             //println("onReceive")
-            var floating_ech_stats = intent.getStringExtra("floating_ech_stats")
-            if(floating_ech_stats == "dismiss") {
-                Timber.d("Got:"+floating_ech_stats);
-                dismiss();
-                return;
+            val floatingEchStats = intent.getStringExtra("floating_ech_stats")
+            if(floatingEchStats == "dismiss") {
+                Timber.d("Got: $floatingEchStats")
+                dismiss()
+                return
             }
             with(floatView) {
                 cadence_float.text = intent.getStringExtra("cadence")
@@ -185,6 +185,10 @@ class ECHStatsFloating constructor(private val context: Context) {
                 time_float.text = intent.getStringExtra("time")
                 kcal_float.text = intent.getStringExtra("kcal")
                 dist_float.text = intent.getStringExtra("dist")
+                max_resistance.text = intent.getStringExtra("resistance_range_upper")
+                min_resistance.text = intent.getStringExtra("resistance_range_lower")
+                max_cadence.text = intent.getStringExtra("cadence_range_upper")
+                min_cadence.text = intent.getStringExtra("cadence_range_lower")
             }
         }
     }

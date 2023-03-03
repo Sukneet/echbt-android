@@ -1,12 +1,6 @@
 package org.prozach.echbt.android
 
-import android.annotation.SuppressLint
-import android.content.BroadcastReceiver
-import android.content.ComponentName
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
-import android.content.ServiceConnection
+import android.content.*
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -14,42 +8,13 @@ import android.os.IBinder
 import android.provider.Settings
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import kotlinx.android.synthetic.main.activity_ech_stats.log_scroll_view
-import kotlinx.android.synthetic.main.activity_ech_stats.log_text_view
-import kotlinx.android.synthetic.main.activity_ech_stats.cadence
-import kotlinx.android.synthetic.main.activity_ech_stats.cadence_avg
-import kotlinx.android.synthetic.main.activity_ech_stats.cadence_max
-import kotlinx.android.synthetic.main.activity_ech_stats.ic_reset_stats
-import kotlinx.android.synthetic.main.activity_ech_stats.ic_reset_time
-import kotlinx.android.synthetic.main.activity_ech_stats.resistance
-import kotlinx.android.synthetic.main.activity_ech_stats.resistance_avg
-import kotlinx.android.synthetic.main.activity_ech_stats.resistance_max
-import kotlinx.android.synthetic.main.activity_ech_stats.power
-import kotlinx.android.synthetic.main.activity_ech_stats.power_avg
-import kotlinx.android.synthetic.main.activity_ech_stats.power_max
-import kotlinx.android.synthetic.main.activity_ech_stats.pipButton
-import kotlinx.android.synthetic.main.activity_ech_stats.kcal
-import kotlinx.android.synthetic.main.activity_ech_stats.dist
-import kotlinx.android.synthetic.main.activity_ech_stats.pip_help
-import kotlinx.android.synthetic.main.activity_ech_stats.reset_stats
-import kotlinx.android.synthetic.main.activity_ech_stats.reset_time
-import kotlinx.android.synthetic.main.activity_ech_stats.stats_format_echelon
-import kotlinx.android.synthetic.main.activity_ech_stats.stats_format_peleton
-import kotlinx.android.synthetic.main.activity_ech_stats.dist_format_miles
-import kotlinx.android.synthetic.main.activity_ech_stats.dist_format_kilometers
-import kotlinx.android.synthetic.main.activity_ech_stats.time
+import kotlinx.android.synthetic.main.activity_ech_stats.*
 import timber.log.Timber
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 class ECHStatsActivity : AppCompatActivity() {
 
-    private lateinit var ECHStatsFloating: ECHStatsFloating
+    private lateinit var echStatsFloating: ECHStatsFloating
     private var floatingWindowShown: Boolean = false
-
-    private val dateFormatter = SimpleDateFormat("MMM d, HH:mm:ss", Locale.US)
-
     private var receiverRegistered: Boolean = false
 
     companion object {
@@ -58,7 +23,7 @@ class ECHStatsActivity : AppCompatActivity() {
 
     var statsService: ECHStatsService? = null
     var isBound = false
-    private val ECHStatsServiceConnection = object : ServiceConnection {
+    private val echStatsServiceConnection = object : ServiceConnection {
         override fun onServiceConnected(className: ComponentName, service: IBinder) {
             Timber.d("Activity Connected")
             val binder = service as ECHStatsService.ECHStatsBinder
@@ -74,23 +39,22 @@ class ECHStatsActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        //println("ONCREATE")
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_ech_stats)
 
         val intent = Intent(this, ECHStatsService::class.java)
-        bindService(intent, ECHStatsServiceConnection, BIND_AUTO_CREATE)
+        bindService(intent, echStatsServiceConnection, BIND_AUTO_CREATE)
 
         val filter = IntentFilter()
         filter.addAction("com.prozach.echbt.android.stats")
         registerReceiver(broadcastHandler, filter)
         receiverRegistered = true
 
-        ECHStatsFloating = ECHStatsFloating(applicationContext)
+        echStatsFloating = ECHStatsFloating(applicationContext)
 
         pipButton.setOnClickListener {
             if (canDrawOverlays) {
-                ECHStatsFloating.show()
+                echStatsFloating.show()
                 floatingWindowShown = true
                 finish()
                 // Return to home screen
@@ -137,6 +101,10 @@ class ECHStatsActivity : AppCompatActivity() {
         dist_format_kilometers.setOnClickListener{
             statsService?.setDistFormat(ECHStatsService.DistFormat.KILOMETERS)
         }
+
+        login.setOnClickListener {
+            statsService?.pelotonLogin(Peloton_user.text.toString(),Peloton_pass.text.toString())
+        }
     }
 
     private val broadcastHandler: BroadcastReceiver = object : BroadcastReceiver() {
@@ -167,7 +135,7 @@ class ECHStatsActivity : AppCompatActivity() {
                         stats_format_peleton.isChecked = true
                     }
                 }
-                var distFormat = intent.getStringExtra("dist_format")
+                val distFormat = intent.getStringExtra("dist_format")
                 if(distFormat != "") {
                     if(distFormat == "miles" && !dist_format_miles.isChecked) {
                         dist_format_miles.isChecked = true
@@ -189,7 +157,7 @@ class ECHStatsActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        unbindService(ECHStatsServiceConnection)
+        unbindService(echStatsServiceConnection)
         if (receiverRegistered) {
             unregisterReceiver(broadcastHandler)
             receiverRegistered = false
@@ -220,7 +188,7 @@ class ECHStatsActivity : AppCompatActivity() {
         when (requestCode) {
             REQUEST_CODE_DRAW_OVERLAY_PERMISSION -> {
                 if (canDrawOverlays) {
-                    ECHStatsFloating.show()
+                    echStatsFloating.show()
                     floatingWindowShown = true
                     finish()
                     // Return to home screen
@@ -243,18 +211,6 @@ class ECHStatsActivity : AppCompatActivity() {
             ).let {
                 startActivityForResult(it, REQUEST_CODE_DRAW_OVERLAY_PERMISSION)
             }
-        }
-    }
-
-    @SuppressLint("SetTextI18n")
-    private fun log(message: String) {
-        val formattedMessage = String.format("%s: %s", dateFormatter.format(Date()), message)
-        runOnUiThread {
-            val currentLogText = log_text_view.text.ifEmpty {
-                "Beginning of log."
-            }
-            log_text_view.text = "$currentLogText\n$formattedMessage"
-            log_scroll_view.post { log_scroll_view.fullScroll(View.FOCUS_DOWN) }
         }
     }
 }

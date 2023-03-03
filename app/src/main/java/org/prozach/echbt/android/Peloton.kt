@@ -31,6 +31,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.serialization.*
 import kotlinx.serialization.json.*
 import timber.log.Timber
+import java.io.File
 
 
 @Serializable
@@ -54,25 +55,28 @@ data class Workout(val ride: Ride? = null)
 @Serializable
 data class RideResponse(val instructor_cues: List<InstructorCues>? = null)
 
-class Peloton(username: String, password: String) {
-    private var auth:LoginResponse
+class Peloton(storageFile: File) {
+    private var auth = LoginResponse(status=-1)
     private var workoutID = ""
     private var rideID = ""
 
+    private val storageF = FileStorage(storageFile)
     private val client = HttpClient(CIO) {
         install(ContentNegotiation) {
             json(Json {
                 ignoreUnknownKeys = true
             })
         }
-        install(HttpCookies)
+        install(HttpCookies)//{
+        //    storage = storageF
+        //}
     }
 
-    init {
+    fun login(user:String,pass:String){
         runBlocking {
             val response: HttpResponse = client.post("https://api.onepeloton.com/auth/login") {
                 contentType(ContentType.Application.Json)
-                setBody(User(username, password))
+                setBody(User(user, pass))
             }
             auth = response.body()
             //println("Peloton Response:")
@@ -85,20 +89,21 @@ class Peloton(username: String, password: String) {
         } else {
             Timber.e("Peloton Auth failed")
         }
-
     }
 
     val latestWorkout: Flow<List<InstructorCues>> = flow {
-        while(auth.status == 0) {
-            Timber.d("Checking workoutlist")
-            val update = getWorkoutList(1)
-            if (update) {
-                Timber.i("New Workout!!")
-                getWorkout()
-                val latestInstructorCues = getRide(rideID)
-                if (latestInstructorCues != null) {
-                    emit(latestInstructorCues)
-                } // Emits the result of the request to the flow
+        while(currentCoroutineContext().isActive) {
+            if (auth.status == 0) {
+                Timber.d("Checking workoutlist")
+                val update = getWorkoutList(1)
+                if (update) {
+                    Timber.i("New Workout!!")
+                    getWorkout()
+                    val latestInstructorCues = getRide(rideID)
+                    if (latestInstructorCues != null) {
+                        emit(latestInstructorCues)
+                    } // Emits the result of the request to the flow
+                }
             }
 
             delay(10000) // Suspends the coroutine for some time
@@ -111,7 +116,7 @@ class Peloton(username: String, password: String) {
         runBlocking {
             val response: HttpResponse = client.get("https://api.onepeloton.com/api/user/" + auth.user_id + "/workouts?sort_by=-created&page=0&limit=$limit")
             val workout:WorkoutResponse = response.body()
-            //println(response.bodyAsText())
+            println(response.bodyAsText())
 
             if (workout.data?.get(0)?.status == "IN_PROGRESS"){
                 workoutID = workout.data[0].id
@@ -139,5 +144,32 @@ class Peloton(username: String, password: String) {
             ride = response.body()
         }
         return ride.instructor_cues
+    }
+}
+
+class FileStorage(val file: File) : CookiesStorage {
+    init {
+        //require(file.isFile)
+        file.createNewFile()
+    }
+
+    override suspend fun addCookie(requestUrl: Url, cookie: Cookie) {
+        // either append a new cookie at the end, or sort it and put new entries at the correct line (faster search) or create a new file for each domain
+        file.appendText("${requestUrl.host}:${cookie.name}:${cookie.value}")
+    }
+
+    override fun close() {
+        // file is already closed after write
+    }
+
+    override suspend fun get(requestUrl: Url): List<Cookie> {
+        return file.readLines().mapNotNull {
+                val (host, name, value) = it.split(":")
+                if (host == requestUrl.host) {
+                    Cookie(name = name, value = value)
+                } else {
+                    null
+                }
+            }
     }
 }

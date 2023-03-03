@@ -188,10 +188,8 @@
                     android:id="@+id/ic_resistance"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_weight=".25"
                     android:contentDescription="@string/resistance"
-                    app:srcCompat="@mipmap/ic_resistance2"
-                    />
+                    app:srcCompat="@mipmap/ic_resistance2" />
 
             </LinearLayout>
 
@@ -633,18 +631,18 @@
                     android:layout_height="wrap_content"
                     android:buttonTint="@color/colorAccent"
                     android:checked="true"
+                    android:minHeight="48dp"
                     android:text="@string/miles"
-                    android:textColor="?android:attr/colorForegroundInverse"
-                    />
+                    android:textColor="?android:attr/colorForegroundInverse" />
 
                 <RadioButton
                     android:id="@+id/dist_format_kilometers"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:buttonTint="@color/colorAccent"
+                    android:minHeight="48dp"
                     android:text="@string/kilometers"
-                    android:textColor="?android:attr/colorForegroundInverse"
-                    />
+                    android:textColor="?android:attr/colorForegroundInverse" />
             </RadioGroup>
 
             <Button
@@ -678,33 +676,92 @@
         </LinearLayout>
 
         <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.9"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/Peloton_user_text"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.5"
+                        android:text="@string/peloton_username"
+                        android:textColor="?android:attr/colorForegroundInverse"
+                        android:textSize="20sp" />
+
+                    <EditText
+                        android:id="@+id/Peloton_user"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.5"
+                        android:autofillHints=""
+                        android:ems="10"
+                        android:hint="@string/username"
+                        android:inputType="textPersonName|textAutoComplete"
+                        android:text="@string/username"
+                        android:textColor="?android:attr/colorForegroundInverse"
+                        android:textSize="20sp"
+                        tools:ignore="DuplicateSpeakableTextCheck" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/Peloton_pass_text"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.5"
+                        android:text="@string/peloton_password"
+                        android:textColor="?android:attr/colorForegroundInverse"
+                        android:textSize="20sp" />
+
+                    <EditText
+                        android:id="@+id/Peloton_pass"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.5"
+                        android:autofillHints=""
+                        android:ems="10"
+                        android:hint="@string/peloton_password"
+                        android:inputType="textPassword|textAutoComplete|textWebPassword"
+                        android:textColor="?android:attr/colorForegroundInverse"
+                        android:textSize="20sp"
+                        tools:ignore="DuplicateSpeakableTextCheck" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/login"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.10"
+                android:text="@string/login" />
+
+        </LinearLayout>
+
+        <LinearLayout
             android:id="@+id/debug_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical"
             android:visibility="invisible"
             >
-
-            <EditText
-                android:id="@+id/Peloton_user"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:ems="10"
-                android:hint="username"
-                android:inputType="textPersonName|textAutoComplete"
-                android:text="User"
-                android:autofillHints=""
-                />
-
-            <EditText
-                android:id="@+id/Peloton_pass"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:ems="10"
-                android:hint="password"
-                android:inputType="textPassword|textAutoComplete|textWebPassword"
-                android:autofillHints=""
-                />
 
             <TextView
                 android:id="@+id/log_title"

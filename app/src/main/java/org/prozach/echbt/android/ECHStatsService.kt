@@ -22,13 +22,14 @@ import kotlin.math.pow
 import kotlinx.coroutines.launch
 import androidx.lifecycle.lifecycleScope
 import timber.log.Timber
+import java.io.File
 import kotlin.math.roundToInt
 
 class ECHStatsService : LifecycleService() {
 
     private val sensorUUID = UUID.fromString("0bf669f4-45f2-11e7-9598-0800200c9a66")
     private val writeUUID = UUID.fromString("0bf669f2-45f2-11e7-9598-0800200c9a66")
-    private val CHANNEL_ID = "Echadence"
+    private val channelID = "Echadence"
 
     // https://www.techotopia.com/index.php/Android_Local_Bound_Services_%E2%80%93_A_Kotlin_Example
     private val binder = ECHStatsBinder()
@@ -48,14 +49,22 @@ class ECHStatsService : LifecycleService() {
     private var cadenceMax: UInt = 0u
     private var cadenceTotal: UInt = 0u
     private var powerMax: UInt = 0u
-    private var dist: Long = 0;
-    private var startTimeMillis: Long = 0;
-    private var elapsedTimeMillis: Long = 0;
+    private var dist: Long = 0
+    private var startTimeMillis: Long = 0
+    private var elapsedTimeMillis: Long = 0
     private var statCount: UInt = 0u
-    private var distFormat: DistFormat = DistFormat.MILES;
-    private var statsFormat: StatsFormat = StatsFormat.PELOTON;
+    private var distFormat: DistFormat = DistFormat.MILES
+    private var statsFormat: StatsFormat = StatsFormat.PELOTON
 
+    private var resistanceRangeUpper = 0
+    private var resistanceRangeLower = 0
+    private var cadenceRangeUpper = 0
+    private var cadenceRangeLower = 0
+
+    private var peloton_username = ""
+    private var peloton_password = ""
     private val follow = FollowRide()
+    private lateinit var peloton:Peloton
 
     enum class StatsFormat {
         ECHELON, PELOTON
@@ -65,29 +74,51 @@ class ECHStatsService : LifecycleService() {
         MILES, KILOMETERS
     }
 
+    override fun onCreate(){
+        super.onCreate()
+        peloton = Peloton(java.io.File(filesDir, "cookies.txt"))
+    }
+
     fun setStatsFormat(sf: StatsFormat) {
         statsFormat = sf
         powerMax = 0U
     }
 
     fun setDistFormat(df: DistFormat) {
-        var intent = Intent("com.prozach.echbt.android.stats");
+        //var intent = Intent("com.prozach.echbt.android.stats")
         distFormat = df
     }
 
     fun clearStats() {
-        resistanceMax = 0U;
-        resistanceTotal = 0U;
-        cadenceMax = 0U;
-        cadenceTotal = 0U;
-        powerMax = 0U;
-        statCount = 0U;
-        dist = 0L;
+        resistanceMax = 0U
+        resistanceTotal = 0U
+        cadenceMax = 0U
+        cadenceTotal = 0U
+        powerMax = 0U
+        statCount = 0U
+        dist = 0L
     }
 
     fun clearTime() {
         startTimeMillis = 0L
         elapsedTimeMillis = 0L
+    }
+
+    fun increaseTime(inc:Int) {
+        follow.increaseTime(inc)
+    }
+
+    fun decreaseTime(dec:Int) {
+        follow.decreaseTime(dec)
+    }
+
+    fun pelotonLogin(username:String,password:String) {
+        peloton_username = username
+        peloton_password = password
+
+        if (peloton_username.isNotEmpty() && peloton_password.isNotEmpty()) {
+            peloton.login(peloton_username,peloton_password)
+        }
     }
 
     fun shutdown() {
@@ -122,7 +153,7 @@ class ECHStatsService : LifecycleService() {
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val serviceChannel = NotificationChannel(
-                CHANNEL_ID, "Foreground Service Channel",
+                channelID, "Foreground Service Channel",
                 NotificationManager.IMPORTANCE_DEFAULT
             )
             val manager = getSystemService(NotificationManager::class.java)
@@ -142,7 +173,7 @@ class ECHStatsService : LifecycleService() {
             this,
             0, notificationIntent, 0
         )
-        val notification = NotificationCompat.Builder(this, CHANNEL_ID)
+        val notification = NotificationCompat.Builder(this, channelID)
             .setContentTitle(this.resources.getString(R.string.app_name))
             .setContentText("Bike Stats collection running...")
             .setSmallIcon(R.mipmap.ic_cadence_white)
@@ -178,12 +209,21 @@ class ECHStatsService : LifecycleService() {
     }
 
     private suspend fun startPeloton() {
-        val username = "****"
-        val password = "****"
         Timber.i("Creating Peloton")
 
         lifecycleScope.launch {
-            val peloton = Peloton(username, password)
+            //peloton.login(peloton_username, peloton_password)
+
+            launch {
+                follow.resistance.collect { followOutput ->
+                    resistanceRangeUpper = followOutput.resistanceRangeUpper
+                    resistanceRangeLower = followOutput.resistanceRangeLower
+                    cadenceRangeUpper = followOutput.cadenceRangeUpper
+                    cadenceRangeLower = followOutput.cadenceRangeLower
+                    Timber.i("Setting New Resistance to $followOutput.resistance")
+                    forceResistance(followOutput.resistance)
+                }
+            }
 
             launch {
                 peloton.latestWorkout.collect { latestInstructorCues ->
@@ -193,12 +233,7 @@ class ECHStatsService : LifecycleService() {
                 }
             }
 
-            launch {
-                follow.resistance.collect { resistance ->
-                    Timber.i("Setting New Resistance to $resistance")
-                    forceResistance(resistance)
-                }
-            }
+
         }
     }
 
@@ -302,12 +337,12 @@ class ECHStatsService : LifecycleService() {
         }
 
         // Cadence
-	intent.putExtra("cadence", cadenceVal.toString());
-        intent.putExtra("cadence_max", cadenceMax.toString());
-        var cadenceAverage = 0U;
+        intent.putExtra("cadence", cadenceVal.toString())
+        intent.putExtra("cadence_max", cadenceMax.toString())
+        var cadenceAverage = 0U
         if(statCount > 0.toUInt()) {
-            cadenceAverage = (cadenceTotal / statCount).toUInt();
-            intent.putExtra("cadence_avg", cadenceAverage.toString());
+            cadenceAverage = (cadenceTotal / statCount)
+            intent.putExtra("cadence_avg", cadenceAverage.toString())
         }
 
         // Resistance
@@ -354,14 +389,20 @@ class ECHStatsService : LifecycleService() {
         }
 
         // Cadence to kph https://github.com/cagnulein/qdomyos-zwift/issues/62
-        val distanceKilometers = (cadenceAverage.toFloat() * 0.37497622F) * (currentElapsedTimeMillis.toFloat()/3600000F);
+        val distanceKilometers = (cadenceAverage.toFloat() * 0.37497622F) * (currentElapsedTimeMillis.toFloat()/3600000F)
         if(distFormat == DistFormat.MILES) {
-            intent.putExtra("dist_format", "miles");
-            intent.putExtra("dist", ((distanceKilometers * 0.621371 * 100.0).roundToInt()/100.0).toString());
+            intent.putExtra("dist_format", "miles")
+            intent.putExtra("dist", ((distanceKilometers * 0.621371 * 100.0).roundToInt()/100.0).toString())
         } else if(distFormat == DistFormat.KILOMETERS) {
-            intent.putExtra("dist_format", "kilometers");
-            intent.putExtra("dist", ((distanceKilometers * 100.0).roundToInt()/100.0).toString());
+            intent.putExtra("dist_format", "kilometers")
+            intent.putExtra("dist", ((distanceKilometers * 100.0).roundToInt()/100.0).toString())
         }
+
+        // Fellow
+        intent.putExtra("resistance_range_upper",resistanceRangeUpper.toString())
+        intent.putExtra("resistance_range_lower",resistanceRangeLower.toString())
+        intent.putExtra("cadence_range_upper",cadenceRangeUpper.toString())
+        intent.putExtra("cadence_range_lower",cadenceRangeLower.toString())
 
         sendBroadcast(intent)
         /* println("sendLocalBroadcast") */
@@ -387,22 +428,18 @@ class ECHStatsService : LifecycleService() {
     }
 
     private fun calcResistance(r: UInt): UInt {
-
-        val resistance: UInt = when (statsFormat) {
-            // https://www.desmos.com/calculator/jsf64byu6p
+        val peloResistance = intArrayOf(0,3,6,8,10,12,14,16,18,20,25,28,30,32,33,35,37,38,40,42,45,47,48,50,52,55,60,65,70,75,80,85,90)
+        return when (statsFormat) {
             StatsFormat.PELOTON -> {
-                ((((0.000363841 * r.toFloat().pow(3)) +
-                        (-0.0184465 * r.toFloat().pow(3)) +
-                        (0.284268 * r.toFloat().pow(2)) +
-                        (1.00338 * r.toFloat())) +
-                        -0.0607239)).toUInt()
+                peloResistance[r.toInt()].toUInt()
+                //((0.0116058 * r.toFloat()
+                //    .pow(3)) + (-0.568562 * r.toFloat()
+                //    .pow(2)) + (10.4126 * r.toFloat()) - 31.4807).toUInt()
             }
             StatsFormat.ECHELON -> {
                 r
             }
         }
-
-        return resistance
     }
 
     private fun calcPower(c: UInt, r: UInt): UInt {

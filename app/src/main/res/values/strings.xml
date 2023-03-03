@@ -22,4 +22,10 @@
     <string name="zero">0</string>
     <string name="stats_format">Stats Format</string>
     <string name="dist_format">Distance Format</string>
+    <string name="increase">+</string>
+    <string name="decrease">-</string>
+    <string name="peloton_username">Peloton Username:</string>
+    <string name="peloton_password">Peloton Password:</string>
+    <string name="username">username</string>
+    <string name="login">Login</string>
 </resources>
