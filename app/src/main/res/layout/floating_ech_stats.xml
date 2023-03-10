@@ -24,7 +24,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="100dp"
+            android:layout_height="110dp"
             android:baselineAligned="false"
             android:orientation="horizontal"
             android:padding="3dp">
@@ -41,6 +41,7 @@
                     android:id="@+id/min_cadence"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:paddingBottom="20sp"
                     android:textAlignment="textEnd"
                     android:textColor="@android:color/background_light"
                     android:textSize="20sp" />
@@ -80,7 +81,10 @@
                     android:id="@+id/cadenceBar"
                     style="?android:attr/progressBarStyleHorizontal"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:max="100"
+                    android:progressTint="@color/colorPrimary"
+                    android:progressTintMode="add" />
 
                 <TextView
                     android:id="@+id/cadence_float"
@@ -105,7 +109,8 @@
                     android:id="@+id/max_cadence"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textAlignment="textEnd"
+                    android:paddingBottom="20sp"
+                    android:textAlignment="textStart"
                     android:textColor="@android:color/background_light"
                     android:textSize="20sp" />
 
@@ -139,6 +144,7 @@
                     android:id="@+id/min_resistance"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:paddingBottom="20sp"
                     android:textAlignment="textEnd"
                     android:textColor="@android:color/background_light"
                     android:textSize="20sp" />
@@ -175,6 +181,17 @@
                     android:layout_width="match_parent"
                     android:text="@string/resistance" />
 
+                <ProgressBar
+                    android:id="@+id/resistanceBar"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:max="100"
+                    android:padding="0dp"
+                    android:progress="0"
+                    android:progressTint="@color/colorPrimary"
+                    android:progressTintMode="src_over" />
+
                 <TextView
                     android:id="@+id/resistance_float"
                     android:layout_width="match_parent"
@@ -198,7 +215,8 @@
                     android:id="@+id/max_resistance"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textAlignment="textEnd"
+                    android:paddingBottom="20sp"
+                    android:textAlignment="textStart"
                     android:textColor="@android:color/background_light"
                     android:textSize="20sp" />
 
@@ -302,7 +320,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="100dp"
+            android:layout_height="80dp"
             android:orientation="horizontal"
             android:padding="0dp">
 
@@ -317,10 +335,20 @@
 
             <Button
                 android:id="@+id/decrease_time"
-                android:layout_width="10dp"
+                android:layout_width="5dp"
                 android:layout_height="match_parent"
+                android:layout_marginTop="-33sp"
                 android:layout_weight="0.33"
-                android:text="@string/decrease" />
+                android:background="#00000000"
+                android:enabled="true"
+                android:gravity="center"
+                android:hapticFeedbackEnabled="true"
+                android:longClickable="true"
+                android:padding="0sp"
+                android:singleLine="false"
+                android:text="@string/decrease"
+                android:textAlignment="center"
+                android:textSize="96sp" />
 
             <TextView
                 android:id="@+id/time_float"
@@ -334,31 +362,20 @@
 
             <Button
                 android:id="@+id/increase_time"
-                android:layout_width="10dp"
+                android:layout_width="5dp"
                 android:layout_height="match_parent"
-                android:layout_margin="0sp"
-                android:layout_marginStart="0sp"
-                android:layout_marginLeft="0sp"
-                android:layout_marginTop="0sp"
-                android:layout_marginEnd="0sp"
-                android:layout_marginRight="0sp"
-                android:layout_marginBottom="0sp"
+                android:layout_marginTop="-32sp"
                 android:layout_weight="0.33"
+                android:background="#00000000"
                 android:enabled="true"
                 android:gravity="center"
                 android:hapticFeedbackEnabled="true"
                 android:longClickable="true"
                 android:padding="0sp"
-                android:paddingStart="0sp"
-                android:paddingLeft="0sp"
-                android:paddingTop="0sp"
-                android:paddingEnd="0sp"
-                android:paddingRight="0sp"
-                android:paddingBottom="0sp"
                 android:singleLine="false"
                 android:text="@string/increase"
                 android:textAlignment="center"
-                android:textSize="48sp" />
+                android:textSize="96sp" />
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/ic_kcal_float"
@@ -405,7 +422,7 @@
                 android:contentDescription="@string/kcal"
                 app:srcCompat="@mipmap/ic_back" />
 
-            <androidx.appcompat.widget.AppCompatImageView
+<!--            <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/ic_reset_time"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
@@ -419,7 +436,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight=".33"
                 android:contentDescription="@string/kcal"
-                app:srcCompat="@mipmap/ic_reset_stats" />
+                app:srcCompat="@mipmap/ic_reset_stats" />-->
         </LinearLayout>
 
     </LinearLayout>

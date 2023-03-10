@@ -8,6 +8,8 @@ import android.os.IBinder
 import android.provider.Settings
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.gms.auth.api.identity.SavePasswordRequest
+import com.google.android.gms.auth.api.identity.SignInPassword
 import kotlinx.android.synthetic.main.activity_ech_stats.*
 import timber.log.Timber
 
@@ -103,6 +105,9 @@ class ECHStatsActivity : AppCompatActivity() {
         }
 
         login.setOnClickListener {
+            val signInPassword = SignInPassword(Peloton_user.text.toString(), Peloton_pass.text.toString())
+            val savePasswordRequest =
+                SavePasswordRequest.builder().setSignInPassword(signInPassword).build()
             statsService?.pelotonLogin(Peloton_user.text.toString(),Peloton_pass.text.toString())
         }
     }

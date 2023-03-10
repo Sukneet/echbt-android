@@ -13,17 +13,16 @@ import android.os.IBinder
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleService
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
 import org.prozach.echbt.android.ble.ConnectionEventListener
 import org.prozach.echbt.android.ble.ConnectionManager
 import org.prozach.echbt.android.ble.toHexString
-import java.util.Locale
-import java.util.UUID
-import kotlin.math.pow
-import kotlinx.coroutines.launch
-import androidx.lifecycle.lifecycleScope
 import timber.log.Timber
-import java.io.File
+import java.util.*
+import kotlin.math.pow
 import kotlin.math.roundToInt
+
 
 class ECHStatsService : LifecycleService() {
 
@@ -56,13 +55,13 @@ class ECHStatsService : LifecycleService() {
     private var distFormat: DistFormat = DistFormat.MILES
     private var statsFormat: StatsFormat = StatsFormat.PELOTON
 
-    private var resistanceRangeUpper = 0
+    private var resistanceRangeUpper = 1
     private var resistanceRangeLower = 0
-    private var cadenceRangeUpper = 0
+    private var cadenceRangeUpper = 1
     private var cadenceRangeLower = 0
 
-    private var peloton_username = ""
-    private var peloton_password = ""
+    private var pelotonUsername = ""
+    private var pelotonPassword = ""
     private val follow = FollowRide()
     private lateinit var peloton:Peloton
 
@@ -113,11 +112,11 @@ class ECHStatsService : LifecycleService() {
     }
 
     fun pelotonLogin(username:String,password:String) {
-        peloton_username = username
-        peloton_password = password
+        pelotonUsername = username
+        pelotonPassword = password
 
-        if (peloton_username.isNotEmpty() && peloton_password.isNotEmpty()) {
-            peloton.login(peloton_username,peloton_password)
+        if (pelotonUsername.isNotEmpty() && pelotonPassword.isNotEmpty()) {
+            peloton.login(pelotonUsername,pelotonPassword)
         }
     }
 
@@ -212,7 +211,7 @@ class ECHStatsService : LifecycleService() {
         Timber.i("Creating Peloton")
 
         lifecycleScope.launch {
-            //peloton.login(peloton_username, peloton_password)
+            //peloton.login(pelotonUsername, pelotonPassword)
 
             launch {
                 follow.resistance.collect { followOutput ->
@@ -229,7 +228,7 @@ class ECHStatsService : LifecycleService() {
                 peloton.latestWorkout.collect { latestInstructorCues ->
                     //follow.cues = latestInstructorCues
                     Timber.i("New instructor cues")
-                    follow.update(latestInstructorCues)
+                    follow.update(latestInstructorCues.startTime,latestInstructorCues.instructor_cues!!)
                 }
             }
 

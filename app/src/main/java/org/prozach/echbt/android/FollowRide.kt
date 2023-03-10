@@ -34,9 +34,9 @@ class FollowRide {
     private var currentCue = 0
     var startTimeMillis: Long = 0
 
-    fun update(newCues: List<InstructorCues>){
+    fun update(startTime: Long, newCues: List<InstructorCues>){
         cues = newCues
-        startTimeMillis = System.currentTimeMillis()
+        startTimeMillis = startTime//System.currentTimeMillis()
         Timber.d("new cues at $startTimeMillis")
         currentCue = 0
         stillRunning = true
@@ -44,7 +44,7 @@ class FollowRide {
 
     val resistance: Flow<FollowOut> = flow {
         var updateResistance = true
-        var output = FollowOut(0,0,0,0,0u)
+        val output = FollowOut(0,0,0,0,0u)
         while (currentCoroutineContext().isActive){
             if (!stillRunning || cues.isEmpty() || currentCue >= cues.size) {
                 delay (1000)

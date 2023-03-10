@@ -8,7 +8,10 @@ import android.os.IBinder
 import android.view.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat.startActivity
+import kotlinx.android.synthetic.main.activity_ech_stats.view.*
 import kotlinx.android.synthetic.main.floating_ech_stats.view.*
+//import kotlinx.android.synthetic.main.floating_ech_stats.view.ic_reset_stats
+//import kotlinx.android.synthetic.main.floating_ech_stats.view.ic_reset_time
 import timber.log.Timber
 import kotlin.math.abs
 
@@ -189,6 +192,16 @@ class ECHStatsFloating constructor(private val context: Context) {
                 min_resistance.text = intent.getStringExtra("resistance_range_lower")
                 max_cadence.text = intent.getStringExtra("cadence_range_upper")
                 min_cadence.text = intent.getStringExtra("cadence_range_lower")
+
+                var cadenceProgress = (((intent.getStringExtra("cadence")!!.toDouble()-intent.getStringExtra("cadence_range_lower")!!.toDouble()) / (intent.getStringExtra("cadence_range_upper")!!.toDouble() - intent.getStringExtra("cadence_range_lower")!!.toDouble())) * 100).toInt()
+                cadenceProgress = if (cadenceProgress > 0) cadenceProgress else 0
+                //Timber.d("Cadence Progress = $cadenceProgress")
+                cadenceBar.progress = cadenceProgress
+
+                var resistanceProgress = (((intent.getStringExtra("resistance")!!.toDouble() - intent.getStringExtra("resistance_range_lower")!!.toDouble()) / (intent.getStringExtra("resistance_range_upper")!!.toDouble() - intent.getStringExtra("resistance_range_lower")!!.toDouble())) * 100).toInt()
+                resistanceProgress = if (resistanceProgress > 0) resistanceProgress else  0
+                //Timber.d("Resistance Progress = $resistanceProgress")
+                resistanceBar.progress = resistanceProgress
             }
         }
     }

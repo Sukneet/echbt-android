@@ -41,7 +41,7 @@ data class User(val username_or_email: String, val password: String)
 data class LoginResponse(val status: Int = 0, val error_code: Int = 0, val message: String = "", val session_id: String = "", val user_id: String = "")
 
 @Serializable
-data class WorkoutItem(val id: String = "", val status: String = "", val start_time: UInt)
+data class WorkoutItem(val id: String = "", val status: String = "", val start_time: Long)
 
 @Serializable
 data class WorkoutResponse(val data: List<WorkoutItem>? = null)
@@ -55,12 +55,15 @@ data class Workout(val ride: Ride? = null)
 @Serializable
 data class RideResponse(val instructor_cues: List<InstructorCues>? = null)
 
+data class FlowOutput(val startTime:Long = 0L, val instructor_cues: List<InstructorCues>? = null)
+
 class Peloton(storageFile: File) {
     private var auth = LoginResponse(status=-1)
     private var workoutID = ""
     private var rideID = ""
+    private var workoutStartTime = 0L
 
-    private val storageF = FileStorage(storageFile)
+    //private val storageF = FileStorage(storageFile)
     private val client = HttpClient(CIO) {
         install(ContentNegotiation) {
             json(Json {
@@ -91,7 +94,7 @@ class Peloton(storageFile: File) {
         }
     }
 
-    val latestWorkout: Flow<List<InstructorCues>> = flow {
+    val latestWorkout: Flow<FlowOutput> = flow {
         while(currentCoroutineContext().isActive) {
             if (auth.status == 0) {
                 Timber.d("Checking workoutlist")
@@ -101,7 +104,7 @@ class Peloton(storageFile: File) {
                     getWorkout()
                     val latestInstructorCues = getRide(rideID)
                     if (latestInstructorCues != null) {
-                        emit(latestInstructorCues)
+                        emit(FlowOutput(workoutStartTime,latestInstructorCues))
                     } // Emits the result of the request to the flow
                 }
             }
@@ -116,12 +119,12 @@ class Peloton(storageFile: File) {
         runBlocking {
             val response: HttpResponse = client.get("https://api.onepeloton.com/api/user/" + auth.user_id + "/workouts?sort_by=-created&page=0&limit=$limit")
             val workout:WorkoutResponse = response.body()
-            println(response.bodyAsText())
+            //println(response.bodyAsText())
 
             if (workout.data?.get(0)?.status == "IN_PROGRESS"){
                 workoutID = workout.data[0].id
+                workoutStartTime = workout.data[0].start_time
             }
-            workoutID = workout.data?.get(0)?.id.orEmpty()
         }
         Timber.d("Workout : $workoutID")
         return (oldWorkout != workoutID)
@@ -132,7 +135,7 @@ class Peloton(storageFile: File) {
             val response: HttpResponse = client.get("https://api.onepeloton.com/api/workout/$workoutID")
             val workout:Workout = response.body()
 
-            Timber.d("Ride : " + workout.ride?.id.orEmpty())
+            Timber.d("Ride : %s", workout.ride?.id.orEmpty())
             rideID = workout.ride?.id.orEmpty()
         }
     }
