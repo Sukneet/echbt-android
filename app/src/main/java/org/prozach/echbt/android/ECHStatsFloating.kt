@@ -99,6 +99,7 @@ class ECHStatsFloating constructor(private val context: Context) {
                 dismiss()
             }
 
+            /*
             ic_reset_stats.setOnClickListener {
                 statsService?.clearStats()
             }
@@ -106,6 +107,7 @@ class ECHStatsFloating constructor(private val context: Context) {
             ic_reset_time.setOnClickListener {
                 statsService?.clearTime()
             }
+            */
 
             increase_time.setOnClickListener {
                 statsService?.increaseTime(1)

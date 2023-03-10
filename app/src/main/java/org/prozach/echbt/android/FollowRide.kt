@@ -36,7 +36,7 @@ class FollowRide {
 
     fun update(startTime: Long, newCues: List<InstructorCues>){
         cues = newCues
-        startTimeMillis = startTime//System.currentTimeMillis()
+        startTimeMillis = startTime *1000//System.currentTimeMillis()
         Timber.d("new cues at $startTimeMillis")
         currentCue = 0
         stillRunning = true

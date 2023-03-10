@@ -2,7 +2,7 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="2000dp"
+    android:layout_width="wrap_content"
     android:layout_height="200dp"
     android:background="@color/cardview_shadow_start_color"
     android:visibility="visible"
@@ -320,7 +320,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="80dp"
+            android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:padding="0dp">
 
@@ -337,7 +337,6 @@
                 android:id="@+id/decrease_time"
                 android:layout_width="5dp"
                 android:layout_height="match_parent"
-                android:layout_marginTop="-33sp"
                 android:layout_weight="0.33"
                 android:background="#00000000"
                 android:enabled="true"
@@ -348,14 +347,16 @@
                 android:singleLine="false"
                 android:text="@string/decrease"
                 android:textAlignment="center"
-                android:textSize="96sp" />
+                android:textColor="#FFFFFF"
+                android:textSize="60sp" />
 
             <TextView
                 android:id="@+id/time_float"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight=".75"
                 android:contentDescription="@string/power"
+                android:gravity="center"
                 android:textAlignment="center"
                 android:textColor="@android:color/background_light"
                 android:textSize="30sp" />
@@ -364,7 +365,6 @@
                 android:id="@+id/increase_time"
                 android:layout_width="5dp"
                 android:layout_height="match_parent"
-                android:layout_marginTop="-32sp"
                 android:layout_weight="0.33"
                 android:background="#00000000"
                 android:enabled="true"
@@ -375,7 +375,8 @@
                 android:singleLine="false"
                 android:text="@string/increase"
                 android:textAlignment="center"
-                android:textSize="96sp" />
+                android:textColor="#FFFFFF"
+                android:textSize="60sp" />
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/ic_kcal_float"
@@ -388,9 +389,10 @@
             <TextView
                 android:id="@+id/kcal_float"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight=".75"
                 android:contentDescription="@string/kcal"
+                android:gravity="center"
                 android:textAlignment="center"
                 android:textColor="@android:color/background_light"
                 android:textSize="30sp" />
@@ -407,9 +409,10 @@
             <TextView
                 android:id="@+id/dist_float"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight=".75"
                 android:contentDescription="@string/dist"
+                android:gravity="center"
                 android:textAlignment="center"
                 android:textColor="@android:color/background_light"
                 android:textSize="30sp" />
@@ -422,7 +425,7 @@
                 android:contentDescription="@string/kcal"
                 app:srcCompat="@mipmap/ic_back" />
 
-<!--            <androidx.appcompat.widget.AppCompatImageView
+            <!--            <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/ic_reset_time"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
