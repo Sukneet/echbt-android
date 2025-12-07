@@ -1,6 +1,10 @@
 package org.prozach.echbt.android
 
-import android.content.*
+import android.content.BroadcastReceiver
+import android.content.ComponentName
+import android.content.Context
+import android.content.Context.RECEIVER_EXPORTED
+import android.content.Context.RECEIVER_NOT_EXPORTED
 import android.content.Context.WINDOW_SERVICE
 import android.graphics.PixelFormat
 import android.os.Build
@@ -8,13 +12,8 @@ import android.os.IBinder
 import android.view.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat.startActivity
-import kotlinx.android.synthetic.main.activity_ech_stats.view.*
-import kotlinx.android.synthetic.main.floating_ech_stats.view.*
-//import kotlinx.android.synthetic.main.floating_ech_stats.view.ic_reset_stats
-//import kotlinx.android.synthetic.main.floating_ech_stats.view.ic_reset_time
-import timber.log.Timber
 import kotlin.math.abs
-
+import org.prozach.echbt.android.databinding.FloatingEchStatsBinding
 
 class ECHStatsFloating constructor(private val context: Context) {
 
@@ -24,8 +23,9 @@ class ECHStatsFloating constructor(private val context: Context) {
             return field
         }
 
-    private var floatView: View =
-        LayoutInflater.from(context).inflate(R.layout.floating_ech_stats, null)
+    private var _binding: FloatingEchStatsBinding? = FloatingEchStatsBinding.inflate(LayoutInflater.from(context), null, false)
+    private val binding get() = _binding!!
+    private var floatView = binding.root
 
     private lateinit var layoutParams: WindowManager.LayoutParams
 
@@ -92,7 +92,7 @@ class ECHStatsFloating constructor(private val context: Context) {
 
     init {
         with(floatView) {
-            ic_back_float.setOnClickListener {
+            binding.icBackFloat.setOnClickListener {
                 val intent = Intent(context, ECHStatsActivity::class.java)
                 intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
                 startActivity(context, intent, null)
@@ -100,11 +100,11 @@ class ECHStatsFloating constructor(private val context: Context) {
             }
 
             /*
-            ic_reset_stats.setOnClickListener {
+            binding.icResetStats.setOnClickListener {
                 statsService?.clearStats()
             }
 
-            ic_reset_time.setOnClickListener {
+            binding.icResetTime.setOnClickListener {
                 statsService?.clearTime()
             }
             */
@@ -154,7 +154,11 @@ class ECHStatsFloating constructor(private val context: Context) {
             windowManager?.addView(floatView, layoutParams)
             val filter = IntentFilter()
             filter.addAction("com.prozach.echbt.android.stats")
-            context.registerReceiver(broadcastHandler, filter)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                context.registerReceiver(broadcastHandler, filter, RECEIVER_EXPORTED)
+            } else {
+                context.registerReceiver(broadcastHandler, filter)
+            }
         }
         val intent = Intent(context, ECHStatsService::class.java)
         context.bindService(intent, echStatsServiceConnection, AppCompatActivity.BIND_AUTO_CREATE)

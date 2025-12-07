@@ -13,9 +13,15 @@ import com.google.android.gms.auth.api.identity.SignInPassword
 import kotlinx.android.synthetic.main.activity_ech_stats.*
 import timber.log.Timber
 
+import org.prozach.echbt.android.databinding.ActivityEchStatsBinding
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+
 class ECHStatsActivity : AppCompatActivity() {
 
-    private lateinit var echStatsFloating: ECHStatsFloating
+    private lateinit var binding: ActivityEchStatsBinding
+    private lateinit var ECHStatsFloating: ECHStatsFloating
     private var floatingWindowShown: Boolean = false
     private var receiverRegistered: Boolean = false
 
@@ -42,19 +48,25 @@ class ECHStatsActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_ech_stats)
+        binding = ActivityEchStatsBinding.inflate(layoutInflater)
+        val view = binding.root
+        setContentView(view)
 
         val intent = Intent(this, ECHStatsService::class.java)
         bindService(intent, echStatsServiceConnection, BIND_AUTO_CREATE)
 
         val filter = IntentFilter()
         filter.addAction("com.prozach.echbt.android.stats")
-        registerReceiver(broadcastHandler, filter)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            registerReceiver(broadcastHandler, filter, RECEIVER_EXPORTED)
+        } else {
+            registerReceiver(broadcastHandler, filter)
+        }
         receiverRegistered = true
 
         echStatsFloating = ECHStatsFloating(applicationContext)
 
-        pipButton.setOnClickListener {
+        binding.pipButton.setOnClickListener {
             if (canDrawOverlays) {
                 echStatsFloating.show()
                 floatingWindowShown = true
@@ -70,37 +82,37 @@ class ECHStatsActivity : AppCompatActivity() {
         }
 
         if (canDrawOverlays) {
-            pip_help.visibility = View.INVISIBLE
+            binding.pipHelp.visibility = View.INVISIBLE
         } else {
-            pip_help.visibility = View.VISIBLE
+            binding.pipHelp.visibility = View.VISIBLE
         }
 
-        ic_reset_stats.setOnClickListener{
+        binding.icResetStats.setOnClickListener{
             statsService?.clearStats()
             statsService?.forceResistance(32u)
         }
-        reset_stats.setOnClickListener{
+        binding.resetStats.setOnClickListener{
             statsService?.clearStats()
             statsService?.forceResistance(32u)
         }
-        ic_reset_time.setOnClickListener{
+        binding.icResetTime.setOnClickListener{
             statsService?.clearStats()
             statsService?.forceResistance(1u)
         }
-        reset_time.setOnClickListener{
+        binding.resetTime.setOnClickListener{
             statsService?.clearTime()
             statsService?.forceResistance(1u)
         }
-        stats_format_echelon.setOnClickListener{
+        binding.statsFormatEchelon.setOnClickListener{
             statsService?.setStatsFormat(ECHStatsService.StatsFormat.ECHELON)
         }
-        stats_format_peleton.setOnClickListener{
+        binding.statsFormatPeleton.setOnClickListener{
             statsService?.setStatsFormat(ECHStatsService.StatsFormat.PELOTON)
         }
-        dist_format_miles.setOnClickListener{
+        binding.distFormatMiles.setOnClickListener{
             statsService?.setDistFormat(ECHStatsService.DistFormat.MILES)
         }
-        dist_format_kilometers.setOnClickListener{
+        binding.distFormatKilometers.setOnClickListener{
             statsService?.setDistFormat(ECHStatsService.DistFormat.KILOMETERS)
         }
         time_format_elapsed.setOnClickListener{
@@ -122,39 +134,39 @@ class ECHStatsActivity : AppCompatActivity() {
         override fun onReceive(context: Context, intent: Intent) {
             //println("onReceive")
             runOnUiThread {
-                cadence.text = intent.getStringExtra("cadence")
-                cadence_avg.text = intent.getStringExtra("cadence_avg")
-                cadence_max.text = intent.getStringExtra("cadence_max")
-                resistance.text = intent.getStringExtra("resistance")
-                resistance_avg.text = intent.getStringExtra("resistance_avg")
-                resistance_max.text = intent.getStringExtra("resistance_max")
-                power.text = intent.getStringExtra("power")
-                power_avg.text = intent.getStringExtra("power_avg")
-                power_max.text = intent.getStringExtra("power_max")
-                time.text = intent.getStringExtra("time")
-                kcal.text = intent.getStringExtra("kcal")
-                dist.text = intent.getStringExtra("dist")
+                binding.cadence.text = intent.getStringExtra("cadence")
+                binding.cadenceAvg.text = intent.getStringExtra("cadence_avg")
+                binding.cadenceMax.text = intent.getStringExtra("cadence_max")
+                binding.resistance.text = intent.getStringExtra("resistance")
+                binding.resistanceAvg.text = intent.getStringExtra("resistance_avg")
+                binding.resistanceMax.text = intent.getStringExtra("resistance_max")
+                binding.power.text = intent.getStringExtra("power")
+                binding.powerAvg.text = intent.getStringExtra("power_avg")
+                binding.powerMax.text = intent.getStringExtra("power_max")
+                binding.time.text = intent.getStringExtra("time")
+                binding.kcal.text = intent.getStringExtra("kcal")
+                binding.dist.text = intent.getStringExtra("dist")
 
                 val statsFormat = intent.getStringExtra("stats_format")
                 if(statsFormat != "") {
-                    if(statsFormat == "echelon" && !stats_format_echelon.isChecked) {
-                        stats_format_echelon.isChecked = true
-                        stats_format_peleton.isChecked = false
+                    if(statsFormat == "echelon" && !binding.statsFormatEchelon.isChecked) {
+                        binding.statsFormatEchelon.isChecked = true
+                        binding.statsFormatPeleton.isChecked = false
                     }
-                    if(statsFormat == "peloton" && !stats_format_peleton.isChecked) {
-                        stats_format_echelon.isChecked = false
-                        stats_format_peleton.isChecked = true
+                    if(statsFormat == "peloton" && !binding.statsFormatPeleton.isChecked) {
+                        binding.statsFormatEchelon.isChecked = false
+                        binding.statsFormatPeleton.isChecked = true
                     }
                 }
                 val distFormat = intent.getStringExtra("dist_format")
                 if(distFormat != "") {
-                    if(distFormat == "miles" && !dist_format_miles.isChecked) {
-                        dist_format_miles.isChecked = true
-                        dist_format_kilometers.isChecked = false
+                    if(distFormat == "miles" && !binding.distFormatMiles.isChecked) {
+                        binding.distFormatMiles.isChecked = true
+                        binding.distFormatKilometers.isChecked = false
                     }
-                    if(distFormat == "kilometers" && !dist_format_kilometers.isChecked) {
-                        dist_format_miles.isChecked = false
-                        dist_format_kilometers.isChecked = true
+                    if(distFormat == "kilometers" && !binding.distFormatKilometers.isChecked) {
+                        binding.distFormatMiles.isChecked = false
+                        binding.distFormatKilometers.isChecked = true
                     }
                 }
             }
@@ -222,6 +234,20 @@ class ECHStatsActivity : AppCompatActivity() {
             ).let {
                 startActivityForResult(it, REQUEST_CODE_DRAW_OVERLAY_PERMISSION)
             }
+        }
+    }
+
+    @SuppressLint("SetTextI18n")
+    private fun log(message: String) {
+        val formattedMessage = String.format("%s: %s", dateFormatter.format(Date()), message)
+        runOnUiThread {
+            val currentLogText = if (binding.logTextView.text.isEmpty()) {
+                "Beginning of log."
+            } else {
+                binding.logTextView.text
+            }
+            binding.logTextView.text = "$currentLogText\n$formattedMessage"
+            binding.logScrollView.post { binding.logScrollView.fullScroll(View.FOCUS_DOWN) }
         }
     }
 }
