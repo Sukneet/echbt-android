@@ -578,16 +578,14 @@
             <RadioGroup
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.25"
-                >
+                android:layout_weight="0.125">
 
                 <TextView
                     android:id="@+id/stats_format"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/stats_format"
-                    android:textColor="?android:attr/colorForegroundInverse"
-                    />
+                    android:textColor="?android:attr/colorForegroundInverse" />
 
                 <RadioButton
                     android:id="@+id/stats_format_echelon"
@@ -596,8 +594,7 @@
                     android:buttonTint="@color/colorAccent"
                     android:minHeight="48dp"
                     android:text="@string/echelon"
-                    android:textColor="?android:attr/colorForegroundInverse"
-                    />
+                    android:textColor="?android:attr/colorForegroundInverse" />
 
                 <RadioButton
                     android:id="@+id/stats_format_peleton"
@@ -607,23 +604,20 @@
                     android:checked="true"
                     android:minHeight="48dp"
                     android:text="@string/peloton"
-                    android:textColor="?android:attr/colorForegroundInverse"
-                    />
+                    android:textColor="?android:attr/colorForegroundInverse" />
             </RadioGroup>
 
             <RadioGroup
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.25"
-                >
+                android:layout_weight="0.125">
 
                 <TextView
                     android:id="@+id/dist_format"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/dist_format"
-                    android:textColor="?android:attr/colorForegroundInverse"
-                    />
+                    android:textColor="?android:attr/colorForegroundInverse" />
 
                 <RadioButton
                     android:id="@+id/dist_format_miles"
@@ -645,13 +639,44 @@
                     android:textColor="?android:attr/colorForegroundInverse" />
             </RadioGroup>
 
+            <RadioGroup
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.125">
+
+                <TextView
+                    android:id="@+id/time_format"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/dist_format"
+                    android:textColor="?android:attr/colorForegroundInverse" />
+
+                <RadioButton
+                    android:id="@+id/time_format_elapsed"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:buttonTint="@color/colorAccent"
+                    android:checked="true"
+                    android:minHeight="48dp"
+                    android:text="@string/Elapsed"
+                    android:textColor="?android:attr/colorForegroundInverse" />
+
+                <RadioButton
+                    android:id="@+id/time_format_remaining"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:buttonTint="@color/colorAccent"
+                    android:minHeight="48dp"
+                    android:text="@string/Remaining"
+                    android:textColor="?android:attr/colorForegroundInverse" />
+            </RadioGroup>
+
             <Button
                 android:id="@+id/pipButton"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight=".50"
-                android:text="@string/pip"
-                />
+                android:layout_weight=".625"
+                android:text="@string/pip" />
 
         </LinearLayout>
 
@@ -670,8 +695,7 @@
                 android:text="@string/pip_help"
                 android:textColor="@android:color/holo_red_dark"
                 android:textSize="18sp"
-                android:visibility="visible"
-                />
+                android:visibility="visible" />
 
         </LinearLayout>
 

@@ -32,7 +32,7 @@ class FollowRide {
     private var cues = listOf<InstructorCues>()
     private var stillRunning = false
     private var currentCue = 0
-    var startTimeMillis: Long = 0
+    var startTimeMillis: Long = System.currentTimeMillis()
 
     fun update(startTime: Long, newCues: List<InstructorCues>){
         cues = newCues

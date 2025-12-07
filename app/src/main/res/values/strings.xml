@@ -19,6 +19,8 @@
     <string name="peloton">Peloton</string>
     <string name="miles">Miles</string>
     <string name="kilometers">Kilometers</string>
+    <string name="Elapsed">Elapsed</string>
+    <string name="Remaining">Remaining</string>
     <string name="zero">0</string>
     <string name="stats_format">Stats Format</string>
     <string name="dist_format">Distance Format</string>

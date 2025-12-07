@@ -103,6 +103,12 @@ class ECHStatsActivity : AppCompatActivity() {
         dist_format_kilometers.setOnClickListener{
             statsService?.setDistFormat(ECHStatsService.DistFormat.KILOMETERS)
         }
+        time_format_elapsed.setOnClickListener{
+            statsService?.setTimeFormat(ECHStatsService.TimeFormat.ELAPSED)
+        }
+        time_format_remaining.setOnClickListener{
+            statsService?.setTimeFormat(ECHStatsService.TimeFormat.REMAINING)
+        }
 
         login.setOnClickListener {
             val signInPassword = SignInPassword(Peloton_user.text.toString(), Peloton_pass.text.toString())

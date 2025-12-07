@@ -196,7 +196,12 @@ class ECHStatsFloating constructor(private val context: Context) {
                 min_cadence.text = intent.getStringExtra("cadence_range_lower")
 
                 var cadenceProgress = (((intent.getStringExtra("cadence")!!.toDouble()-intent.getStringExtra("cadence_range_lower")!!.toDouble()) / (intent.getStringExtra("cadence_range_upper")!!.toDouble() - intent.getStringExtra("cadence_range_lower")!!.toDouble())) * 100).toInt()
-                cadenceProgress = if (cadenceProgress > 0) cadenceProgress else 0
+                if (cadenceProgress > 0) {
+                    cadenceProgress = cadenceProgress
+                } else {
+                    cadenceProgress = 0
+                    //set tint color
+                }
                 //Timber.d("Cadence Progress = $cadenceProgress")
                 cadenceBar.progress = cadenceProgress
 

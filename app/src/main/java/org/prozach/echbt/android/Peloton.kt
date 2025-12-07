@@ -47,7 +47,7 @@ data class WorkoutItem(val id: String = "", val status: String = "", val start_t
 data class WorkoutResponse(val data: List<WorkoutItem>? = null)
 
 @Serializable
-data class Ride(val id: String = "", val title: String = "")
+data class Ride(val id: String = "", val title: String = "", val duration: Long)
 
 @Serializable
 data class Workout(val ride: Ride? = null)
@@ -55,13 +55,14 @@ data class Workout(val ride: Ride? = null)
 @Serializable
 data class RideResponse(val instructor_cues: List<InstructorCues>? = null)
 
-data class FlowOutput(val startTime:Long = 0L, val instructor_cues: List<InstructorCues>? = null)
+data class FlowOutput(val startTime:Long = 0L, val duration: Long = 0L, val instructor_cues: List<InstructorCues>? = null)
 
 class Peloton(storageFile: File) {
     private var auth = LoginResponse(status=-1)
     private var workoutID = ""
     private var rideID = ""
     private var workoutStartTime = 0L
+    private var rideDuration = 0L
 
     //private val storageF = FileStorage(storageFile)
     private val client = HttpClient(CIO) {
@@ -104,7 +105,7 @@ class Peloton(storageFile: File) {
                     getWorkout()
                     val latestInstructorCues = getRide(rideID)
                     if (latestInstructorCues != null) {
-                        emit(FlowOutput(workoutStartTime,latestInstructorCues))
+                        emit(FlowOutput(workoutStartTime,rideDuration,latestInstructorCues))
                     } // Emits the result of the request to the flow
                 }
             }
@@ -137,6 +138,7 @@ class Peloton(storageFile: File) {
 
             Timber.d("Ride : %s", workout.ride?.id.orEmpty())
             rideID = workout.ride?.id.orEmpty()
+            rideDuration = workout.ride!!.duration
         }
     }
 

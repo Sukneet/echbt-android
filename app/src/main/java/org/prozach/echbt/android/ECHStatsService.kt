@@ -54,6 +54,8 @@ class ECHStatsService : LifecycleService() {
     private var statCount: UInt = 0u
     private var distFormat: DistFormat = DistFormat.MILES
     private var statsFormat: StatsFormat = StatsFormat.PELOTON
+    private var timeFormat: TimeFormat = TimeFormat.ELAPSED
+    private var rideDuration: Long = 60L
 
     private var resistanceRangeUpper = 1
     private var resistanceRangeLower = 0
@@ -73,6 +75,10 @@ class ECHStatsService : LifecycleService() {
         MILES, KILOMETERS
     }
 
+    enum class TimeFormat {
+        ELAPSED, REMAINING
+    }
+
     override fun onCreate(){
         super.onCreate()
         peloton = Peloton(java.io.File(filesDir, "cookies.txt"))
@@ -87,6 +93,11 @@ class ECHStatsService : LifecycleService() {
         //var intent = Intent("com.prozach.echbt.android.stats")
         distFormat = df
     }
+
+    fun setTimeFormat(tf: TimeFormat) {
+        timeFormat = tf
+    }
+
 
     fun clearStats() {
         resistanceMax = 0U
@@ -228,6 +239,7 @@ class ECHStatsService : LifecycleService() {
                 peloton.latestWorkout.collect { latestInstructorCues ->
                     //follow.cues = latestInstructorCues
                     Timber.i("New instructor cues")
+                    rideDuration = latestInstructorCues.duration
                     follow.update(latestInstructorCues.startTime,latestInstructorCues.instructor_cues!!)
                 }
             }
@@ -354,14 +366,17 @@ class ECHStatsService : LifecycleService() {
         intent.putExtra("resistance_max", calcResistance(resistanceMax).toString())
 
 
-        val currentElapsedTimeMillis = System.currentTimeMillis() - follow.startTimeMillis
+        var currentElapsedTimeMillis = System.currentTimeMillis() - follow.startTimeMillis
+        if (timeFormat == TimeFormat.REMAINING){
+            currentElapsedTimeMillis = rideDuration - currentElapsedTimeMillis
+        }
         /*
         var currentElapsedTimeMillis = elapsedTimeMillis
         if(startTimeMillis > 0) {
             currentElapsedTimeMillis += System.currentTimeMillis() - follow.startTimeMillis
         }
          */
-        val minutes = currentElapsedTimeMillis / 1000 / 60
+        val minutes = (currentElapsedTimeMillis / 1000 / 60) - 1
         val seconds = currentElapsedTimeMillis / 1000 % 60
         intent.putExtra("time", minutes.toString()+":"+seconds.toString().padStart(2, '0'))
 
