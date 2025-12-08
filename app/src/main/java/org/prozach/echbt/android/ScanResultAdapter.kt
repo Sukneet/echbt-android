@@ -19,13 +19,6 @@ class ScanResultAdapter(
         _binding = RowScanResultBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false)
         val view = binding.root
         return ViewHolder(view, binding, onClickListener)
-
-//        val view = parent.context.layoutInflater.inflate(
-//            R.layout.row_scan_result,
-//            parent,
-//            false
-//        )
-//        return ViewHolder(view, onClickListener)
     }
 
     override fun getItemCount() = items.size
