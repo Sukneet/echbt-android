@@ -4,16 +4,19 @@ import android.content.BroadcastReceiver
 import android.content.ComponentName
 import android.content.Context
 import android.content.Context.RECEIVER_EXPORTED
-import android.content.Context.RECEIVER_NOT_EXPORTED
 import android.content.Context.WINDOW_SERVICE
+import android.content.Intent
+import android.content.IntentFilter
+import android.content.ServiceConnection // <-- FIX: This import was missing
 import android.graphics.PixelFormat
 import android.os.Build
 import android.os.IBinder
 import android.view.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat.startActivity
-import kotlin.math.abs
 import org.prozach.echbt.android.databinding.FloatingEchStatsBinding
+import timber.log.Timber
+import kotlin.math.abs
 
 class ECHStatsFloating constructor(private val context: Context) {
 
@@ -60,9 +63,12 @@ class ECHStatsFloating constructor(private val context: Context) {
                 lastY = event.rawY.toInt()
                 firstX = lastX
                 firstY = lastY
+                touchConsumedByMove = false // Reset move flag
             }
             MotionEvent.ACTION_UP -> {
-                view.performClick()
+                if (!touchConsumedByMove) {
+                    view.performClick()
+                }
             }
             MotionEvent.ACTION_MOVE -> {
                 val deltaX = event.rawX.toInt() - lastX
@@ -77,11 +83,7 @@ class ECHStatsFloating constructor(private val context: Context) {
                         windowManager?.apply {
                             updateViewLayout(floatView, layoutParams)
                         }
-                    } else {
-                        touchConsumedByMove = false
                     }
-                } else {
-                    touchConsumedByMove = false
                 }
             }
             else -> {
@@ -91,41 +93,35 @@ class ECHStatsFloating constructor(private val context: Context) {
     }
 
     init {
-        with(floatView) {
-            binding.icBackFloat.setOnClickListener {
+        with(binding) { // Use binding directly
+            /*
+            icBackFloat.setOnClickListener {
                 val intent = Intent(context, ECHStatsActivity::class.java)
                 intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
                 startActivity(context, intent, null)
                 dismiss()
             }
 
-            /*
-            binding.icResetStats.setOnClickListener {
-                statsService?.clearStats()
-            }
 
-            binding.icResetTime.setOnClickListener {
-                statsService?.clearTime()
-            }
-            */
-
-            increase_time.setOnClickListener {
+            increaseTime.setOnClickListener {
                 statsService?.increaseTime(1)
             }
 
-            increase_time.setOnLongClickListener {
+            increaseTime.setOnLongClickListener {
                 statsService?.increaseTime(60)
-                false
+                true // Return true for long click
             }
 
-            decrease_time.setOnClickListener {
+            decreaseTime.setOnClickListener {
                 statsService?.decreaseTime(1)
             }
 
-            decrease_time.setOnLongClickListener {
+            decreaseTime.setOnLongClickListener {
                 statsService?.decreaseTime(60)
-                false
+                true // Return true for long click
             }
+
+             */
         }
 
         floatView.setOnTouchListener(onTouchListener)
@@ -149,7 +145,7 @@ class ECHStatsFloating constructor(private val context: Context) {
     fun show() {
         Timber.i("show")
         if (context.canDrawOverlays) {
-            dismiss()
+            if(isShowing) return // Don't add view if already showing
             isShowing = true
             windowManager?.addView(floatView, layoutParams)
             val filter = IntentFilter()
@@ -166,53 +162,68 @@ class ECHStatsFloating constructor(private val context: Context) {
 
     fun dismiss() {
         if (isShowing) {
-            windowManager?.removeView(floatView)
-            isShowing = false
-            context.unregisterReceiver(broadcastHandler)
+            try {
+                windowManager?.removeView(floatView)
+                context.unregisterReceiver(broadcastHandler)
+            } catch (e: Exception) {
+                Timber.e(e, "Error during dismiss")
+            } finally {
+                isShowing = false
+            }
         }
     }
 
     private val broadcastHandler: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
-            //println("onReceive")
             val floatingEchStats = intent.getStringExtra("floating_ech_stats")
             if(floatingEchStats == "dismiss") {
                 Timber.d("Got: $floatingEchStats")
                 dismiss()
                 return
             }
-            with(floatView) {
-                cadence_float.text = intent.getStringExtra("cadence")
-                avg_cadence_float.text = intent.getStringExtra("cadence_avg")
-                max_cadence_float.text = intent.getStringExtra("cadence_max")
-                resistance_float.text = intent.getStringExtra("resistance")
-                avg_resistance_float.text = intent.getStringExtra("resistance_avg")
-                max_resistance_float.text = intent.getStringExtra("resistance_max")
-                power_float.text = intent.getStringExtra("power")
-                avg_power_float.text = intent.getStringExtra("power_avg")
-                max_power_float.text = intent.getStringExtra("power_max")
-                time_float.text = intent.getStringExtra("time")
-                kcal_float.text = intent.getStringExtra("kcal")
-                dist_float.text = intent.getStringExtra("dist")
-                max_resistance.text = intent.getStringExtra("resistance_range_upper")
-                min_resistance.text = intent.getStringExtra("resistance_range_lower")
-                max_cadence.text = intent.getStringExtra("cadence_range_upper")
-                min_cadence.text = intent.getStringExtra("cadence_range_lower")
+            with(binding) { // Use binding directly
+                /*
+                cadenceFloat.text = intent.getStringExtra("cadence")
+                avgCadenceFloat.text = intent.getStringExtra("cadence_avg")
+                maxCadenceFloat.text = intent.getStringExtra("cadence_max")
+                resistanceFloat.text = intent.getStringExtra("resistance")
+                avgResistanceFloat.text = intent.getStringExtra("resistance_avg")
+                maxResistanceFloat.text = intent.getStringExtra("resistance_max")
+                powerFloat.text = intent.getStringExtra("power")
+                avgPowerFloat.text = intent.getStringExtra("power_avg")
+                maxPowerFloat.text = intent.getStringExtra("power_max")
+                timeFloat.text = intent.getStringExtra("time")
+                kcalFloat.text = intent.getStringExtra("kcal")
+                distFloat.text = intent.getStringExtra("dist")
+                maxResistance.text = intent.getStringExtra("resistance_range_upper")
+                minResistance.text = intent.getStringExtra("resistance_range_lower")
+                maxCadence.text = intent.getStringExtra("cadence_range_upper")
+                minCadence.text = intent.getStringExtra("cadence_range_lower")
+                 */
 
-                var cadenceProgress = (((intent.getStringExtra("cadence")!!.toDouble()-intent.getStringExtra("cadence_range_lower")!!.toDouble()) / (intent.getStringExtra("cadence_range_upper")!!.toDouble() - intent.getStringExtra("cadence_range_lower")!!.toDouble())) * 100).toInt()
-                if (cadenceProgress > 0) {
-                    cadenceProgress = cadenceProgress
+                val cadenceValue = intent.getStringExtra("cadence")?.toDoubleOrNull() ?: 0.0
+                val cadenceLower = intent.getStringExtra("cadence_range_lower")?.toDoubleOrNull() ?: 0.0
+                val cadenceUpper = intent.getStringExtra("cadence_range_upper")?.toDoubleOrNull() ?: 1.0 // Avoid division by zero
+
+                var cadenceProgress = if (cadenceUpper > cadenceLower) {
+                    (((cadenceValue - cadenceLower) / (cadenceUpper - cadenceLower)) * 100).toInt()
                 } else {
-                    cadenceProgress = 0
-                    //set tint color
+                    0
                 }
-                //Timber.d("Cadence Progress = $cadenceProgress")
-                cadenceBar.progress = cadenceProgress
+                if (cadenceProgress < 0) cadenceProgress = 0
+                //cadenceBar.progress = cadenceProgress
 
-                var resistanceProgress = (((intent.getStringExtra("resistance")!!.toDouble() - intent.getStringExtra("resistance_range_lower")!!.toDouble()) / (intent.getStringExtra("resistance_range_upper")!!.toDouble() - intent.getStringExtra("resistance_range_lower")!!.toDouble())) * 100).toInt()
-                resistanceProgress = if (resistanceProgress > 0) resistanceProgress else  0
-                //Timber.d("Resistance Progress = $resistanceProgress")
-                resistanceBar.progress = resistanceProgress
+                val resistanceValue = intent.getStringExtra("resistance")?.toDoubleOrNull() ?: 0.0
+                val resistanceLower = intent.getStringExtra("resistance_range_lower")?.toDoubleOrNull() ?: 0.0
+                val resistanceUpper = intent.getStringExtra("resistance_range_upper")?.toDoubleOrNull() ?: 1.0 // Avoid division by zero
+
+                var resistanceProgress = if (resistanceUpper > resistanceLower) {
+                    (((resistanceValue - resistanceLower) / (resistanceUpper - resistanceLower)) * 100).toInt()
+                } else {
+                    0
+                }
+                if (resistanceProgress < 0) resistanceProgress = 0
+                //resistanceBar.progress = resistanceProgress
             }
         }
     }

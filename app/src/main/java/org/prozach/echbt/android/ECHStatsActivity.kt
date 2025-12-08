@@ -1,7 +1,6 @@
 package org.prozach.echbt.android
 
 import android.content.*
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
@@ -10,18 +9,14 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.auth.api.identity.SavePasswordRequest
 import com.google.android.gms.auth.api.identity.SignInPassword
-import kotlinx.android.synthetic.main.activity_ech_stats.*
-import timber.log.Timber
-
 import org.prozach.echbt.android.databinding.ActivityEchStatsBinding
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
+import timber.log.Timber
+import androidx.core.net.toUri
 
 class ECHStatsActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityEchStatsBinding
-    private lateinit var ECHStatsFloating: ECHStatsFloating
+    private lateinit var echStatsFloating: ECHStatsFloating
     private var floatingWindowShown: Boolean = false
     private var receiverRegistered: Boolean = false
 
@@ -106,7 +101,7 @@ class ECHStatsActivity : AppCompatActivity() {
         binding.statsFormatEchelon.setOnClickListener{
             statsService?.setStatsFormat(ECHStatsService.StatsFormat.ECHELON)
         }
-        binding.statsFormatPeleton.setOnClickListener{
+        binding.statsFormatPeloton.setOnClickListener{
             statsService?.setStatsFormat(ECHStatsService.StatsFormat.PELOTON)
         }
         binding.distFormatMiles.setOnClickListener{
@@ -115,18 +110,18 @@ class ECHStatsActivity : AppCompatActivity() {
         binding.distFormatKilometers.setOnClickListener{
             statsService?.setDistFormat(ECHStatsService.DistFormat.KILOMETERS)
         }
-        time_format_elapsed.setOnClickListener{
+        binding.timeFormatElapsed.setOnClickListener{
             statsService?.setTimeFormat(ECHStatsService.TimeFormat.ELAPSED)
         }
-        time_format_remaining.setOnClickListener{
+        binding.timeFormatRemaining.setOnClickListener{
             statsService?.setTimeFormat(ECHStatsService.TimeFormat.REMAINING)
         }
 
-        login.setOnClickListener {
-            val signInPassword = SignInPassword(Peloton_user.text.toString(), Peloton_pass.text.toString())
+        binding.login.setOnClickListener {
+            val signInPassword = SignInPassword(binding.PelotonUser.text.toString(), binding.PelotonPass.text.toString())
             val savePasswordRequest =
                 SavePasswordRequest.builder().setSignInPassword(signInPassword).build()
-            statsService?.pelotonLogin(Peloton_user.text.toString(),Peloton_pass.text.toString())
+            statsService?.pelotonLogin(binding.PelotonUser.text.toString(),binding.PelotonPass.text.toString())
         }
     }
 
@@ -151,11 +146,11 @@ class ECHStatsActivity : AppCompatActivity() {
                 if(statsFormat != "") {
                     if(statsFormat == "echelon" && !binding.statsFormatEchelon.isChecked) {
                         binding.statsFormatEchelon.isChecked = true
-                        binding.statsFormatPeleton.isChecked = false
+                        binding.statsFormatPeloton.isChecked = false
                     }
-                    if(statsFormat == "peloton" && !binding.statsFormatPeleton.isChecked) {
+                    if(statsFormat == "peloton" && !binding.statsFormatPeloton.isChecked) {
                         binding.statsFormatEchelon.isChecked = false
-                        binding.statsFormatPeleton.isChecked = true
+                        binding.statsFormatPeloton.isChecked = true
                     }
                 }
                 val distFormat = intent.getStringExtra("dist_format")
@@ -169,6 +164,7 @@ class ECHStatsActivity : AppCompatActivity() {
                         binding.distFormatKilometers.isChecked = true
                     }
                 }
+                binding.loginStatus.text = intent.getStringExtra("login_status")
             }
         }
     }
@@ -200,7 +196,11 @@ class ECHStatsActivity : AppCompatActivity() {
         val filter = IntentFilter()
         filter.addAction("com.prozach.echbt.android.stats")
         if (!receiverRegistered) {
-            registerReceiver(broadcastHandler, filter)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                registerReceiver(broadcastHandler, filter, RECEIVER_EXPORTED)
+            } else {
+                registerReceiver(broadcastHandler, filter)
+            }
             receiverRegistered = true
         }
 
@@ -219,8 +219,6 @@ class ECHStatsActivity : AppCompatActivity() {
                     startMain.addCategory(Intent.CATEGORY_HOME)
                     startMain.flags = Intent.FLAG_ACTIVITY_NEW_TASK
                     startActivity(startMain)
-                } else {
-                    showToast("Permission is not granted!")
                 }
             }
         }
@@ -230,25 +228,10 @@ class ECHStatsActivity : AppCompatActivity() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             Intent(
                 Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                Uri.parse("package:${applicationContext.packageName}")
+                "package:${applicationContext.packageName}".toUri()
             ).let {
                 startActivityForResult(it, REQUEST_CODE_DRAW_OVERLAY_PERMISSION)
             }
         }
     }
-
-    @SuppressLint("SetTextI18n")
-    private fun log(message: String) {
-        val formattedMessage = String.format("%s: %s", dateFormatter.format(Date()), message)
-        runOnUiThread {
-            val currentLogText = if (binding.logTextView.text.isEmpty()) {
-                "Beginning of log."
-            } else {
-                binding.logTextView.text
-            }
-            binding.logTextView.text = "$currentLogText\n$formattedMessage"
-            binding.logScrollView.post { binding.logScrollView.fullScroll(View.FOCUS_DOWN) }
-        }
-    }
 }
-

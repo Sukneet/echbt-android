@@ -9,6 +9,7 @@ import android.app.Service
 import android.bluetooth.BluetoothDevice
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.ServiceInfo
 import android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC
 import android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK
@@ -17,6 +18,9 @@ import android.os.Build
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.LifecycleService
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
 import org.prozach.echbt.android.ble.ConnectionEventListener
 import org.prozach.echbt.android.ble.ConnectionManager
 import org.prozach.echbt.android.ble.toHexString
@@ -66,8 +70,10 @@ class ECHStatsService : LifecycleService() {
 
     private var pelotonUsername = ""
     private var pelotonPassword = ""
+    private var loginStatus = "Not Logged In"
     private val follow = FollowRide()
     private lateinit var peloton:Peloton
+    private lateinit var sharedPreferences: SharedPreferences
 
     enum class StatsFormat {
         ECHELON, PELOTON
@@ -84,6 +90,7 @@ class ECHStatsService : LifecycleService() {
     override fun onCreate(){
         super.onCreate()
         peloton = Peloton(java.io.File(filesDir, "cookies.txt"))
+        sharedPreferences = getSharedPreferences("peloton_creds", MODE_PRIVATE)
     }
 
     fun setStatsFormat(sf: StatsFormat) {
@@ -129,7 +136,16 @@ class ECHStatsService : LifecycleService() {
         pelotonPassword = password
 
         if (pelotonUsername.isNotEmpty() && pelotonPassword.isNotEmpty()) {
-            peloton.login(pelotonUsername,pelotonPassword)
+            if (peloton.login(pelotonUsername,pelotonPassword)){
+                with(sharedPreferences.edit()) {
+                    putString("username", username)
+                    putString("password", password)
+                    apply()
+                }
+                loginStatus = "Logged In"
+            } else {
+                loginStatus = "Login Failed"
+            }
         }
     }
 
@@ -227,6 +243,16 @@ class ECHStatsService : LifecycleService() {
 
     private suspend fun startPeloton() {
         Timber.i("Creating Peloton")
+
+        pelotonUsername = sharedPreferences.getString("username", "") ?: ""
+        pelotonPassword = sharedPreferences.getString("password", "") ?: ""
+        if (pelotonUsername.isNotEmpty() && pelotonPassword.isNotEmpty()) {
+            if (peloton.login(pelotonUsername, pelotonPassword)) {
+                loginStatus = "Logged In"
+            } else {
+                loginStatus = "Login Failed"
+            }
+        }
 
         lifecycleScope.launch {
             //peloton.login(pelotonUsername, pelotonPassword)
@@ -368,7 +394,10 @@ class ECHStatsService : LifecycleService() {
         if(statCount > 0.toUInt()) {
             intent.putExtra("resistance_avg", calcResistance(resistanceTotal / statCount).toString())
         } else {
-            intent.putExtra("resistance_avg", calcResistance(resistanceVal).toString())
+            intent.putExtra(
+                "resistance_avg",
+                calcResistance(resistanceVal).toString()
+            )
         }
         intent.putExtra("resistance_max", calcResistance(resistanceMax).toString())
 
@@ -424,6 +453,8 @@ class ECHStatsService : LifecycleService() {
         intent.putExtra("resistance_range_lower",resistanceRangeLower.toString())
         intent.putExtra("cadence_range_upper",cadenceRangeUpper.toString())
         intent.putExtra("cadence_range_lower",cadenceRangeLower.toString())
+
+        intent.putExtra("login_status", loginStatus)
 
         sendBroadcast(intent)
         /* println("sendLocalBroadcast") */

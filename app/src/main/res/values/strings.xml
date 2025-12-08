@@ -30,4 +30,9 @@
     <string name="peloton_password">Peloton Password:</string>
     <string name="username">username</string>
     <string name="login">Login</string>
+    <string name="back_to_app">Go Back to App</string>
+    <string name="cadence_icon_description">Icon representing cadence or speed</string>
+    <string name="resistance_icon_description">Icon representing resistance level</string>
+    <string name="power_icon_description">Icon representing power output</string>
+    <string name="time_icon_description">Icon representing time</string>
 </resources>

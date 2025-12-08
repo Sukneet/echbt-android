@@ -4,8 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="200dp"
-    android:background="@color/cardview_shadow_start_color"
-    android:visibility="visible"
+    android:elevation="4dp"
     tools:visibility="visible">
 
     <LinearLayout
@@ -15,13 +14,7 @@
         android:minHeight="200sp"
         android:orientation="vertical">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="#77000000"
-            android:orientation="horizontal"
-            android:padding="5dp" />
-
+        <!-- Top section with Cadence, Resistance, Power -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="110dp"
@@ -29,6 +22,7 @@
             android:orientation="horizontal"
             android:padding="3dp">
 
+            <!-- Cadence Column -->
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
@@ -43,7 +37,6 @@
                     android:layout_height="wrap_content"
                     android:paddingBottom="20sp"
                     android:textAlignment="textEnd"
-                    android:textColor="@android:color/background_light"
                     android:textSize="20sp" />
 
                 <TextView
@@ -52,7 +45,6 @@
                     android:layout_height="wrap_content"
                     android:text="@string/avg"
                     android:textAlignment="center"
-                    android:textColor="@android:color/background_light"
                     android:textSize="12sp" />
 
                 <TextView
@@ -60,9 +52,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textAlignment="center"
-                    android:textColor="@android:color/background_light"
                     android:textSize="20sp" />
-
             </LinearLayout>
 
             <LinearLayout
@@ -72,19 +62,13 @@
                 android:gravity="top"
                 android:orientation="vertical">
 
-                <TextView
-                    android:id="@+id/title_Cadence"
-                    style="@style/Main_title"
-                    android:text="@string/cadence" />
-
                 <ProgressBar
                     android:id="@+id/cadenceBar"
                     style="?android:attr/progressBarStyleHorizontal"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:max="100"
-                    android:progressTint="@color/colorPrimary"
-                    android:progressTintMode="add" />
+                    android:progressTint="@color/colorPrimary" />
 
                 <TextView
                     android:id="@+id/cadence_float"
@@ -92,9 +76,7 @@
                     android:layout_height="wrap_content"
                     android:minWidth="100sp"
                     android:textAlignment="center"
-                    android:textColor="@android:color/background_light"
                     android:textSize="60sp" />
-
             </LinearLayout>
 
             <LinearLayout
@@ -111,7 +93,6 @@
                     android:layout_height="wrap_content"
                     android:paddingBottom="20sp"
                     android:textAlignment="textStart"
-                    android:textColor="@android:color/background_light"
                     android:textSize="20sp" />
 
                 <TextView
@@ -120,7 +101,6 @@
                     android:layout_height="wrap_content"
                     android:text="@string/max"
                     android:textAlignment="center"
-                    android:textColor="@android:color/background_light"
                     android:textSize="12sp" />
 
                 <TextView
@@ -128,10 +108,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textAlignment="center"
-                    android:textColor="@android:color/background_light"
                     android:textSize="20sp" />
             </LinearLayout>
 
+            <!-- Resistance Column -->
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
@@ -146,7 +126,6 @@
                     android:layout_height="wrap_content"
                     android:paddingBottom="20sp"
                     android:textAlignment="textEnd"
-                    android:textColor="@android:color/background_light"
                     android:textSize="20sp" />
 
                 <TextView
@@ -155,7 +134,6 @@
                     android:layout_height="wrap_content"
                     android:text="@string/avg"
                     android:textAlignment="center"
-                    android:textColor="@android:color/background_light"
                     android:textSize="12sp" />
 
                 <TextView
@@ -163,9 +141,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textAlignment="center"
-                    android:textColor="@android:color/background_light"
                     android:textSize="20sp" />
-
             </LinearLayout>
 
             <LinearLayout
@@ -177,8 +153,10 @@
 
                 <TextView
                     android:id="@+id/title_Resistance"
-                    style="@style/Main_title"
                     android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textAlignment="center"
+                    android:textSize="12sp"
                     android:text="@string/resistance" />
 
                 <ProgressBar
@@ -189,8 +167,7 @@
                     android:max="100"
                     android:padding="0dp"
                     android:progress="0"
-                    android:progressTint="@color/colorPrimary"
-                    android:progressTintMode="src_over" />
+                    android:progressTint="@color/colorPrimary" />
 
                 <TextView
                     android:id="@+id/resistance_float"
@@ -198,9 +175,7 @@
                     android:layout_height="wrap_content"
                     android:minWidth="100sp"
                     android:textAlignment="center"
-                    android:textColor="@android:color/background_light"
                     android:textSize="60sp" />
-
             </LinearLayout>
 
             <LinearLayout
@@ -217,7 +192,6 @@
                     android:layout_height="wrap_content"
                     android:paddingBottom="20sp"
                     android:textAlignment="textStart"
-                    android:textColor="@android:color/background_light"
                     android:textSize="20sp" />
 
                 <TextView
@@ -226,7 +200,6 @@
                     android:layout_height="wrap_content"
                     android:text="@string/max"
                     android:textAlignment="center"
-                    android:textColor="@android:color/background_light"
                     android:textSize="12sp" />
 
                 <TextView
@@ -234,11 +207,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textAlignment="center"
-                    android:textColor="@android:color/background_light"
                     android:textSize="20sp" />
-
             </LinearLayout>
 
+            <!-- Power Column -->
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
@@ -253,7 +225,6 @@
                     android:layout_height="wrap_content"
                     android:text="@string/avg"
                     android:textAlignment="center"
-                    android:textColor="@android:color/background_light"
                     android:textSize="12sp" />
 
                 <TextView
@@ -261,9 +232,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textAlignment="center"
-                    android:textColor="@android:color/background_light"
                     android:textSize="20sp" />
-
             </LinearLayout>
 
             <LinearLayout
@@ -275,9 +244,11 @@
 
                 <TextView
                     android:id="@+id/title_Power"
-                    style="@style/Main_title"
                     android:layout_width="match_parent"
-                    android:text="@string/power" />
+                    android:layout_height="wrap_content"
+                    android:textAlignment="center"
+                    android:text="@string/power"
+                    android:textSize="12sp" />
 
                 <TextView
                     android:id="@+id/power_float"
@@ -285,7 +256,6 @@
                     android:layout_height="wrap_content"
                     android:minWidth="100sp"
                     android:textAlignment="center"
-                    android:textColor="@android:color/background_light"
                     android:textSize="60sp" />
             </LinearLayout>
 
@@ -303,7 +273,6 @@
                     android:layout_height="wrap_content"
                     android:text="@string/max"
                     android:textAlignment="center"
-                    android:textColor="@android:color/background_light"
                     android:textSize="12sp" />
 
                 <TextView
@@ -311,13 +280,11 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textAlignment="center"
-                    android:textColor="@android:color/background_light"
                     android:textSize="20sp" />
-
             </LinearLayout>
-
         </LinearLayout>
 
+        <!-- Bottom section with Time, Kcal, Dist, and Controls -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -330,24 +297,19 @@
                 android:layout_height="match_parent"
                 android:layout_weight=".25"
                 android:contentDescription="@string/time"
-                android:theme="@style/AppTheme"
-                app:srcCompat="@mipmap/ic_time_white" />
+                app:srcCompat="@mipmap/ic_time_white"
+                app:tint="@color/black" />
 
             <Button
                 android:id="@+id/decrease_time"
+                style="?android:attr/borderlessButtonStyle"
                 android:layout_width="5dp"
                 android:layout_height="match_parent"
                 android:layout_weight="0.33"
-                android:background="#00000000"
-                android:enabled="true"
+                android:background="@android:color/transparent"
                 android:gravity="center"
-                android:hapticFeedbackEnabled="true"
-                android:longClickable="true"
-                android:padding="0sp"
-                android:singleLine="false"
                 android:text="@string/decrease"
-                android:textAlignment="center"
-                android:textColor="#FFFFFF"
+                android:textColor="@color/black"
                 android:textSize="60sp" />
 
             <TextView
@@ -357,25 +319,18 @@
                 android:layout_weight=".75"
                 android:contentDescription="@string/power"
                 android:gravity="center"
-                android:textAlignment="center"
-                android:textColor="@android:color/background_light"
                 android:textSize="30sp" />
 
             <Button
                 android:id="@+id/increase_time"
+                style="?android:attr/borderlessButtonStyle"
                 android:layout_width="5dp"
                 android:layout_height="match_parent"
                 android:layout_weight="0.33"
-                android:background="#00000000"
-                android:enabled="true"
+                android:background="@android:color/transparent"
                 android:gravity="center"
-                android:hapticFeedbackEnabled="true"
-                android:longClickable="true"
-                android:padding="0sp"
-                android:singleLine="false"
                 android:text="@string/increase"
-                android:textAlignment="center"
-                android:textColor="#FFFFFF"
+                android:textColor="@color/black"
                 android:textSize="60sp" />
 
             <androidx.appcompat.widget.AppCompatImageView
@@ -384,7 +339,8 @@
                 android:layout_height="match_parent"
                 android:layout_weight=".25"
                 android:contentDescription="@string/kcal"
-                app:srcCompat="@mipmap/ic_kcal" />
+                app:srcCompat="@mipmap/ic_kcal"
+                app:tint="@color/black" />
 
             <TextView
                 android:id="@+id/kcal_float"
@@ -393,8 +349,6 @@
                 android:layout_weight=".75"
                 android:contentDescription="@string/kcal"
                 android:gravity="center"
-                android:textAlignment="center"
-                android:textColor="@android:color/background_light"
                 android:textSize="30sp" />
 
             <androidx.appcompat.widget.AppCompatImageView
@@ -403,8 +357,8 @@
                 android:layout_height="match_parent"
                 android:layout_weight=".25"
                 android:contentDescription="@string/dist"
-                android:theme="@style/AppTheme"
-                app:srcCompat="@mipmap/ic_dist" />
+                app:srcCompat="@mipmap/ic_dist"
+                app:tint="@color/black" />
 
             <TextView
                 android:id="@+id/dist_float"
@@ -413,8 +367,6 @@
                 android:layout_weight=".75"
                 android:contentDescription="@string/dist"
                 android:gravity="center"
-                android:textAlignment="center"
-                android:textColor="@android:color/background_light"
                 android:textSize="30sp" />
 
             <androidx.appcompat.widget.AppCompatImageView
@@ -422,8 +374,9 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight=".33"
-                android:contentDescription="@string/kcal"
-                app:srcCompat="@mipmap/ic_back" />
+                android:contentDescription="@string/back_to_app"
+                app:srcCompat="@mipmap/ic_back"
+                app:tint="@color/black" />
 
             <!--            <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/ic_reset_time"
@@ -441,7 +394,5 @@
                 android:contentDescription="@string/kcal"
                 app:srcCompat="@mipmap/ic_reset_stats" />-->
         </LinearLayout>
-
     </LinearLayout>
-
 </FrameLayout>

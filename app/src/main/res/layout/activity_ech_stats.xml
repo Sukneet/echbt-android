@@ -29,7 +29,7 @@
         android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:background="@android:color/background_dark"
+        android:background="?attr/colorSurface"
         android:orientation="vertical"
         android:padding="5dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -43,11 +43,11 @@
             android:id="@+id/textView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@android:color/holo_orange_dark"
+            android:background="?attr/colorPrimary"
             android:padding="3dp"
             android:text="@string/stats_header"
             android:textAlignment="center"
-            android:textColor="@android:color/primary_text_light"
+            android:textColor="?attr/colorOnPrimary"
             android:textSize="24sp"
             />
 
@@ -71,7 +71,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:text="@string/cadence"
-                    android:textColor="?android:attr/colorForegroundInverse"
+                    android:textColor="?attr/colorOnSurface"
                     android:textSize="12sp"
                     />
 
@@ -97,7 +97,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:text="@string/avg"
-                    android:textColor="@color/design_default_color_on_primary"
+                    android:textColor="?attr/colorOnSurface"
                     android:textSize="12sp"
                     />
 
@@ -109,7 +109,7 @@
                     android:paddingStart="5dp"
                     android:paddingEnd="0dp"
                     android:text="@string/zero"
-                    android:textColor="?android:attr/colorForegroundInverse"
+                    android:textColor="?attr/colorOnSurface"
                     android:textSize="26sp"
                     />
             </LinearLayout>
@@ -123,7 +123,7 @@
                 android:paddingStart="5dp"
                 android:paddingEnd="0dp"
                 android:text="@string/zero"
-                android:textColor="?android:attr/colorForegroundInverse"
+                android:textColor="?attr/colorOnSurface"
                 android:textSize="44sp"
                 />
 
@@ -140,7 +140,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:text="@string/max"
-                    android:textColor="?android:attr/colorForegroundInverse"
+                    android:textColor="?attr/colorOnSurface"
                     android:textSize="12sp"
                     />
 
@@ -152,7 +152,7 @@
                     android:paddingStart="5dp"
                     android:paddingEnd="0dp"
                     android:text="@string/zero"
-                    android:textColor="?android:attr/colorForegroundInverse"
+                    android:textColor="?attr/colorOnSurface"
                     android:textSize="26sp"
                     />
 
@@ -180,7 +180,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:text="@string/resistance"
-                    android:textColor="?android:attr/colorForegroundInverse"
+                    android:textColor="?attr/colorOnSurface"
                     android:textSize="12sp"
                     />
 
@@ -206,7 +206,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:text="@string/avg"
-                    android:textColor="?android:attr/colorForegroundInverse"
+                    android:textColor="?attr/colorOnSurface"
                     android:textSize="12sp"
                     />
 
@@ -218,7 +218,7 @@
                     android:paddingStart="5dp"
                     android:paddingEnd="0dp"
                     android:text="@string/zero"
-                    android:textColor="?android:attr/colorForegroundInverse"
+                    android:textColor="?attr/colorOnSurface"
                     android:textSize="26sp"
                     />
             </LinearLayout>
@@ -232,7 +232,7 @@
                 android:paddingStart="5dp"
                 android:paddingEnd="0dp"
                 android:text="@string/zero"
-                android:textColor="?android:attr/colorForegroundInverse"
+                android:textColor="?attr/colorOnSurface"
                 android:textSize="44sp"
                 />
 
@@ -249,7 +249,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:text="@string/max"
-                    android:textColor="?android:attr/colorForegroundInverse"
+                    android:textColor="?attr/colorOnSurface"
                     android:textSize="12sp"
                     />
 
@@ -261,7 +261,7 @@
                     android:paddingStart="5dp"
                     android:paddingEnd="0dp"
                     android:text="@string/zero"
-                    android:textColor="?android:attr/colorForegroundInverse"
+                    android:textColor="?attr/colorOnSurface"
                     android:textSize="24sp"
                     />
             </LinearLayout>
@@ -288,7 +288,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:text="@string/power"
-                    android:textColor="?android:attr/colorForegroundInverse"
+                    android:textColor="?attr/colorOnSurface"
                     android:textSize="12sp"
                     />
 
@@ -315,7 +315,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:text="@string/avg"
-                    android:textColor="?android:attr/colorForegroundInverse"
+                    android:textColor="?attr/colorOnSurface"
                     android:textSize="12sp"
                     />
 
@@ -328,7 +328,7 @@
                     android:paddingStart="5dp"
                     android:paddingEnd="0dp"
                     android:text="@string/zero"
-                    android:textColor="?android:attr/colorForegroundInverse"
+                    android:textColor="?attr/colorOnSurface"
                     android:textSize="26sp"
                     />
             </LinearLayout>
@@ -343,7 +343,7 @@
                 android:paddingStart="5dp"
                 android:paddingEnd="0dp"
                 android:text="@string/zero"
-                android:textColor="?android:attr/colorForegroundInverse"
+                android:textColor="?attr/colorOnSurface"
                 android:textSize="44sp"
                 />
 
@@ -360,7 +360,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:text="@string/max"
-                    android:textColor="?android:attr/colorForegroundInverse"
+                    android:textColor="?attr/colorOnSurface"
                     android:textSize="12sp"
                     />
 
@@ -373,7 +373,7 @@
                     android:paddingStart="5dp"
                     android:paddingEnd="0dp"
                     android:text="@string/zero"
-                    android:textColor="?android:attr/colorForegroundInverse"
+                    android:textColor="?attr/colorOnSurface"
                     android:textSize="26sp"
                     />
             </LinearLayout>
@@ -400,7 +400,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:text="@string/time"
-                    android:textColor="?android:attr/colorForegroundInverse"
+                    android:textColor="?attr/colorOnSurface"
                     android:textSize="12sp"
                     />
 
@@ -423,7 +423,7 @@
                 android:paddingStart="5dp"
                 android:paddingEnd="0dp"
                 android:text="@string/zero"
-                android:textColor="?android:attr/colorForegroundInverse"
+                android:textColor="?attr/colorOnSurface"
                 android:textSize="44sp"
                 />
 
@@ -440,7 +440,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:text="@string/kcal"
-                    android:textColor="?android:attr/colorForegroundInverse"
+                    android:textColor="?attr/colorOnSurface"
                     android:textSize="12sp"
                     />
 
@@ -462,7 +462,7 @@
                 android:paddingStart="5dp"
                 android:paddingEnd="0dp"
                 android:text="@string/zero"
-                android:textColor="?android:attr/colorForegroundInverse"
+                android:textColor="?attr/colorOnSurface"
                 android:textSize="44sp"
                 />
 
@@ -489,7 +489,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:text="@string/dist"
-                    android:textColor="?android:attr/colorForegroundInverse"
+                    android:textColor="?attr/colorOnSurface"
                     android:textSize="12sp"
                     />
 
@@ -512,7 +512,7 @@
                 android:paddingStart="5dp"
                 android:paddingEnd="0dp"
                 android:text="@string/zero"
-                android:textColor="?android:attr/colorForegroundInverse"
+                android:textColor="?attr/colorOnSurface"
                 android:textSize="44sp"
                 />
 
@@ -532,9 +532,9 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight=".3"
-                android:gravity="right|center_vertical|end"
+                android:gravity="center_vertical|end"
                 android:text="@string/reset_time"
-                android:textColor="?android:attr/colorForegroundInverse"
+                android:textColor="?attr/colorOnSurface"
                 android:textSize="22sp"
                 />
 
@@ -563,7 +563,7 @@
                 android:layout_weight=".3"
                 android:gravity="start|center_vertical"
                 android:text="@string/reset_stats"
-                android:textColor="?android:attr/colorForegroundInverse"
+                android:textColor="?attr/colorOnSurface"
                 android:textSize="22sp"
                 />
 
@@ -585,7 +585,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/stats_format"
-                    android:textColor="?android:attr/colorForegroundInverse" />
+                    android:textColor="?attr/colorOnSurface" />
 
                 <RadioButton
                     android:id="@+id/stats_format_echelon"
@@ -594,17 +594,17 @@
                     android:buttonTint="@color/colorAccent"
                     android:minHeight="48dp"
                     android:text="@string/echelon"
-                    android:textColor="?android:attr/colorForegroundInverse" />
+                    android:textColor="?attr/colorOnSurface" />
 
                 <RadioButton
-                    android:id="@+id/stats_format_peleton"
+                    android:id="@+id/stats_format_peloton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:buttonTint="@color/colorAccent"
                     android:checked="true"
                     android:minHeight="48dp"
                     android:text="@string/peloton"
-                    android:textColor="?android:attr/colorForegroundInverse" />
+                    android:textColor="?attr/colorOnSurface" />
             </RadioGroup>
 
             <RadioGroup
@@ -617,7 +617,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/dist_format"
-                    android:textColor="?android:attr/colorForegroundInverse" />
+                    android:textColor="?attr/colorOnSurface" />
 
                 <RadioButton
                     android:id="@+id/dist_format_miles"
@@ -627,7 +627,7 @@
                     android:checked="true"
                     android:minHeight="48dp"
                     android:text="@string/miles"
-                    android:textColor="?android:attr/colorForegroundInverse" />
+                    android:textColor="?attr/colorOnSurface" />
 
                 <RadioButton
                     android:id="@+id/dist_format_kilometers"
@@ -636,7 +636,7 @@
                     android:buttonTint="@color/colorAccent"
                     android:minHeight="48dp"
                     android:text="@string/kilometers"
-                    android:textColor="?android:attr/colorForegroundInverse" />
+                    android:textColor="?attr/colorOnSurface" />
             </RadioGroup>
 
             <RadioGroup
@@ -649,7 +649,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/dist_format"
-                    android:textColor="?android:attr/colorForegroundInverse" />
+                    android:textColor="?attr/colorOnSurface" />
 
                 <RadioButton
                     android:id="@+id/time_format_elapsed"
@@ -659,7 +659,7 @@
                     android:checked="true"
                     android:minHeight="48dp"
                     android:text="@string/Elapsed"
-                    android:textColor="?android:attr/colorForegroundInverse" />
+                    android:textColor="?attr/colorOnSurface" />
 
                 <RadioButton
                     android:id="@+id/time_format_remaining"
@@ -668,14 +668,15 @@
                     android:buttonTint="@color/colorAccent"
                     android:minHeight="48dp"
                     android:text="@string/Remaining"
-                    android:textColor="?android:attr/colorForegroundInverse" />
+                    android:textColor="?attr/colorOnSurface" />
             </RadioGroup>
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/pipButton"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight=".625"
+                app:cornerRadius="10dp"
                 android:text="@string/pip" />
 
         </LinearLayout>
@@ -690,10 +691,10 @@
             <TextView
                 android:id="@+id/pip_help"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="0dp"
                 android:layout_weight="1"
                 android:text="@string/pip_help"
-                android:textColor="@android:color/holo_red_dark"
+                android:textColor="?attr/colorError"
                 android:textSize="18sp"
                 android:visibility="visible" />
 
@@ -721,7 +722,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="0.5"
                         android:text="@string/peloton_username"
-                        android:textColor="?android:attr/colorForegroundInverse"
+                        android:textColor="?attr/colorOnSurface"
                         android:textSize="20sp" />
 
                     <EditText
@@ -734,7 +735,7 @@
                         android:hint="@string/username"
                         android:inputType="textPersonName|textAutoComplete"
                         android:text="@string/username"
-                        android:textColor="?android:attr/colorForegroundInverse"
+                        android:textColor="?attr/colorOnSurface"
                         android:textSize="20sp"
                         tools:ignore="DuplicateSpeakableTextCheck" />
                 </LinearLayout>
@@ -750,7 +751,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="0.5"
                         android:text="@string/peloton_password"
-                        android:textColor="?android:attr/colorForegroundInverse"
+                        android:textColor="?attr/colorOnSurface"
                         android:textSize="20sp" />
 
                     <EditText
@@ -762,7 +763,7 @@
                         android:ems="10"
                         android:hint="@string/peloton_password"
                         android:inputType="textPassword|textAutoComplete|textWebPassword"
-                        android:textColor="?android:attr/colorForegroundInverse"
+                        android:textColor="?attr/colorOnSurface"
                         android:textSize="20sp"
                         tools:ignore="DuplicateSpeakableTextCheck" />
 
@@ -770,14 +771,23 @@
 
             </LinearLayout>
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/login"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="0.10"
+                app:cornerRadius="10dp"
                 android:text="@string/login" />
 
         </LinearLayout>
+        <TextView
+            android:id="@+id/login_status"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAlignment="center"
+            android:textColor="?attr/colorOnSurface"
+            android:textSize="18sp"
+            tools:text="Login Status" />
 
         <LinearLayout
             android:id="@+id/debug_view"

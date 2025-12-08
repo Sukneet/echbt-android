@@ -28,7 +28,7 @@ import io.ktor.serialization.kotlinx.json.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import kotlinx.serialization.*
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.*
 import timber.log.Timber
 import java.io.File
@@ -76,22 +76,24 @@ class Peloton(storageFile: File) {
         //}
     }
 
-    fun login(user:String,pass:String){
+    fun login(user:String,pass:String): Boolean {
         runBlocking {
-            val response: HttpResponse = client.post("https://api.onepeloton.com/auth/login") {
+            val response: HttpResponse = client.post("https://api.onepeloton.com/auth/login?=") {
                 contentType(ContentType.Application.Json)
                 setBody(User(user, pass))
             }
             auth = response.body()
-            //println("Peloton Response:")
-            //println(response.bodyAsText())
+            println("Peloton Response:")
+            println(response.bodyAsText())
         }
 
-        if (auth.status == 0){
+        return if (auth.status == 0){
             Timber.i("Peloton Auth Succeeded")
             //getWorkoutList(1)
+            true
         } else {
             Timber.e("Peloton Auth failed")
+            false
         }
     }
 
@@ -120,7 +122,7 @@ class Peloton(storageFile: File) {
         runBlocking {
             val response: HttpResponse = client.get("https://api.onepeloton.com/api/user/" + auth.user_id + "/workouts?sort_by=-created&page=0&limit=$limit")
             val workout:WorkoutResponse = response.body()
-            //println(response.bodyAsText())
+            println(response.bodyAsText())
 
             if (workout.data?.get(0)?.status == "IN_PROGRESS"){
                 workoutID = workout.data[0].id
@@ -168,8 +170,7 @@ class FileStorage(val file: File) : CookiesStorage {
     }
 
     override suspend fun get(requestUrl: Url): List<Cookie> {
-        return file.readLines().mapNotNull {
-                val (host, name, value) = it.split(":")
+        return file.readLines().mapNotNull {                val (host, name, value) = it.split(":")
                 if (host == requestUrl.host) {
                     Cookie(name = name, value = value)
                 } else {
